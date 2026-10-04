@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.1.2 — 2026-10-04
+
+- `regression` and `manual-qa` read a pull request's diff with `git fetch origin pull/<N>/head`
+  instead of `gh pr diff`, so the GitHub CLI is no longer needed.
+
 ## 1.1.1 — 2026-10-04
 
 - Skills pre-approve only read-only tools, `Agent`, `AskUserQuestion` and `SendMessage`. Shell commands,

@@ -27,7 +27,7 @@ Scope (mirrors `/code-review`):
 - `last` → `git diff HEAD~1`
 - `branch` → `git diff main...HEAD`
 - a file path → that file
-- a PR number → `gh pr diff $ARGUMENTS`
+- a PR number `N` → `git fetch origin pull/N/head:qa-pr-N`, then `git diff $(git merge-base HEAD qa-pr-N)..qa-pr-N`; delete `qa-pr-N` when done (GitHub remotes only)
 
 If the diff is empty, stop and report — nothing to QA. If the working tree is in a half-merged or otherwise broken state, surface that and stop.
 

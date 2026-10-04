@@ -50,7 +50,7 @@ Pick in this order:
 2. Uncommitted changes only → **working tree** (`git diff HEAD`).
 3. Neither → **the feature's commits**: walk back from `HEAD` and take the run of commits that belong to the same feature (same scope prefix, same touched area, same session day). Stop at an unrelated commit or 10 commits, whichever comes first. If the run is ambiguous, take `HEAD~1..HEAD` and say so.
 
-Explicit scope tokens mirror `/code-review`: `staged` · `last` · `last N` · `branch` · `<path>` · `<PR#>` (`gh pr diff`).
+Explicit scope tokens mirror `/code-review`: `staged` · `last` · `last N` · `branch` · `<path>` · `<PR#>` (`git fetch origin pull/<N>/head:qa-pr-<N>`, then diff from the merge base; delete the branch when done).
 
 ### Platform / area
 
