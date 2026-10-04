@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.1 — 2026-10-04
+
+- Skills pre-approve only read-only tools, `Agent`, `AskUserQuestion` and `SendMessage`. Shell commands,
+  file writes and other skills now go through your normal permission prompts.
+- Adds a plugin icon. Drops the `documentationUrl` and `supportUrl` fields (the plugin directory doesn't
+  recognize them; `homepage` and `repository` cover both).
+- The example config serves with `npm start` instead of reading a `.env` file.
+
 ## 1.1.0 — 2026-10-04
 
 - Bundles the `regression` and `manual-qa` skills. Testers audit against their platform checklists

@@ -13,7 +13,7 @@
   "defaultWs": "W1",
   "stack": "language/framework notes for fixers",
   "commitStyle": "`fix: <lowercase summary>` like `git log`",
-  "commands": { "test": "npm test", "lint": "npx eslint .", "build": "npm run build", "serve": "node --env-file=.env server/index.js" },
+  "commands": { "test": "npm test", "lint": "npx eslint .", "build": "npm run build", "serve": "npm start" },
   "ports": { "fixers": "3700-3799", "verifiers": "3900-3999" },
   "sweepPorts": ["3700-3799", "4700-4799", "3900-3999", "4900-4999"],
   "prod": { "rule": "APP_SERVER may point at production (in the global environment, or in a shell outside the agent session; a project settings file may override it for the session) — always pass `--server http://localhost:<port>` to every CLI call that talks to a server, never rely on the default." },
