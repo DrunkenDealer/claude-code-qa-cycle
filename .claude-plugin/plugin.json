@@ -1,0 +1,7 @@
+{
+  "name": "qa-cycle",
+  "version": "1.0.0",
+  "description": "Whole-app QA loop run by an orchestrator: feature map, one tester agent per small unit, a findings list, then fixers in worktrees and fresh verifiers, cycle after cycle.",
+  "author": { "name": "Max Shwed" },
+  "keywords": ["qa", "testing", "agents", "orchestration"]
+}

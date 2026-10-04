@@ -1,0 +1,16 @@
+{
+  "name": "qa-cycle",
+  "owner": {
+    "name": "Max Shwed"
+  },
+  "metadata": {
+    "description": "The qa-cycle skill and its five agents."
+  },
+  "plugins": [
+    {
+      "name": "qa-cycle",
+      "source": "./",
+      "description": "Whole-app QA loop: map, test, fix in worktrees, verify, repeat."
+    }
+  ]
+}

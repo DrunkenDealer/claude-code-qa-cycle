@@ -65,7 +65,7 @@ Before every spawn (not just at the start of a phase), lay out the open work as 
 | fixer ‖ fixer, same functions | **No** — queue the second until the first merges |
 | tester ‖ fixer | Yes, if the tester runs on main, not the fixer's branch |
 
-The usual win is **fix N while planning N+1**: when items N1–N6 all edit the same functions, their fixers run one after another, but while N1's fixer works, planners write the N2/N3 and N4/N5 plans, each "assuming N1 merged". Each fixer then starts the moment the previous merge lands, with no planning wait. Likewise, while waiting on a verifier, plan the next item or let its sibling's fixer start. (e.g. Vitrine cycle 7: N168–N173, all in the editor's layout functions in `web/src/state.js`.)
+The usual win is **fix N while planning N+1**: when items N1–N6 all edit the same functions, their fixers run one after another, but while N1's fixer works, planners write the N2/N3 and N4/N5 plans, each "assuming N1 merged". Each fixer then starts the moment the previous merge lands, with no planning wait. Likewise, while waiting on a verifier, plan the next item or let its sibling's fixer start. (e.g. six items N168–N173, all in one editor's layout functions in a single `state.js`.)
 
 **Stale plans are the price of overlap; guard them in three places:**
 - *Planner* stamps `BASE: main <sha> [+ assumes <ITEM> merged]` (the assumed item by ID, e.g. `+ assumes N170 merged`; never a branch sha — `merge.sh` cherry-picks, so a branch's shas are not on main), names functions (not only lines), and appends revisions as `REVISION n` instead of rewriting.

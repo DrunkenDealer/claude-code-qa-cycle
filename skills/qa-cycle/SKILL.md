@@ -46,6 +46,8 @@ Testers reuse `/regression` and `/manual-qa` method (their `references/<platform
 9 Report→ what changed, the RESIDUALs the user must judge, cleanup; nothing pushed
 ```
 
+Installed as a plugin, the agent types carry the plugin prefix (`qa-cycle:qa-tester`, …); spawn whichever form your agent list shows.
+
 **Gates — the user decides, you don't:**
 - After step 4 (the list), before any fixing.
 - Product decisions inside an item (two valid behaviors, a trade-off between two failures) → planners proceed on a flagged default (`PRODUCT Q — question — default used`) and you put the questions to the user with `AskUserQuestion` (recommended option first) at the next gate; a default that would be destructive or irreversible stops the planner and is asked first.
