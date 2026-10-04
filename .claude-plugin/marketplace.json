@@ -1,16 +1,16 @@
 {
   "name": "qa-cycle",
+  "description": "QA Cycle: whole-app QA, fixing and verification by a team of Claude Code agents.",
   "owner": {
-    "name": "Max Shwed"
-  },
-  "metadata": {
-    "description": "The qa-cycle skill and its five agents."
+    "name": "Max Shwed",
+    "url": "https://github.com/DrunkenDealer"
   },
   "plugins": [
     {
       "name": "qa-cycle",
       "source": "./",
-      "description": "Whole-app QA loop: map, test, fix in worktrees, verify, repeat."
+      "category": "testing",
+      "tags": ["qa", "testing", "multi-agent", "bug-fixing"]
     }
   ]
 }

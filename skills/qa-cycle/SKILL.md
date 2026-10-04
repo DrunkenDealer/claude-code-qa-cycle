@@ -46,7 +46,7 @@ Testers reuse `/regression` and `/manual-qa` method (their `references/<platform
 9 Report→ what changed, the RESIDUALs the user must judge, cleanup; nothing pushed
 ```
 
-Installed as a plugin, the agent types carry the plugin prefix (`qa-cycle:qa-tester`, …); spawn whichever form your agent list shows.
+Installed as a plugin, the agent types and the sibling skills carry the plugin prefix (`qa-cycle:qa-tester`, `/qa-cycle:regression`, …); use whichever form your lists show.
 
 **Gates — the user decides, you don't:**
 - After step 4 (the list), before any fixing.

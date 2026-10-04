@@ -1,7 +1,30 @@
 {
   "name": "qa-cycle",
-  "version": "1.0.0",
-  "description": "Whole-app QA loop run by an orchestrator: feature map, one tester agent per small unit, a findings list, then fixers in worktrees and fresh verifiers, cycle after cycle.",
-  "author": { "name": "Max Shwed" },
-  "keywords": ["qa", "testing", "agents", "orchestration"]
+  "displayName": "QA Cycle",
+  "version": "1.1.0",
+  "description": "Whole-app QA by a team of Claude Code agents: maps every feature, tests each one in parallel, lists the bugs for your approval, fixes them in isolated git worktrees and has a fresh agent verify every fix, cycle after cycle. Also ships /regression and /manual-qa for checking a single change.",
+  "author": {
+    "name": "Max Shwed",
+    "url": "https://github.com/DrunkenDealer"
+  },
+  "homepage": "https://github.com/DrunkenDealer/claude-code-qa-cycle#readme",
+  "repository": "https://github.com/DrunkenDealer/claude-code-qa-cycle",
+  "license": "MIT",
+  "keywords": [
+    "qa",
+    "qa-automation",
+    "testing",
+    "test-automation",
+    "regression-testing",
+    "manual-qa",
+    "bug-fixing",
+    "multi-agent",
+    "subagents",
+    "git-worktree",
+    "android",
+    "ios",
+    "web"
+  ],
+  "documentationUrl": "https://github.com/DrunkenDealer/claude-code-qa-cycle#readme",
+  "supportUrl": "https://github.com/DrunkenDealer/claude-code-qa-cycle/issues"
 }
