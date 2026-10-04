@@ -3,7 +3,7 @@ name: qa-cycle
 description: Whole-app QA loop run by an orchestrator — map every feature, plan small test units, fan out one tester agent per unit, return findings as a list, then after the user's go-ahead fan out fixers (worktrees) and fresh verifiers (sandboxes), and loop cycle after cycle until every fix-now item is verified. Owns the agent structure (orchestrator → testers / fixers / verifiers), which model each role runs on, the machine-load budget, and the durable tracker. Triggers on "test the whole app", "map features and test everything", "QA cycle", "fix everything in the tracker and verify", "next cycle of testing", "fan out agents to test/fix".
 user-invocable: true
 argument-hint: "[map|test|fix|verify|status] [IDs…]"
-allowed-tools: Read, Glob, Grep, Bash, Agent, SendMessage, Skill, AskUserQuestion, Write, Edit, Artifact
+allowed-tools: Read, Glob, Grep, Agent, SendMessage, AskUserQuestion
 ---
 
 # QA cycle

@@ -3,7 +3,7 @@ name: manual-qa
 description: Manual-QA pass over recent changes — files concrete bug reports (blocker/major/minor) for UI, navigation, and cross-feature regressions a tester would catch. Auto-detects the platform (Android, iOS, web) from the changed files and audits against that platform's bar; off-platform changes are judged against existing behavior. Builds and tests the branch first, then optionally drives a device or browser to confirm visual bugs. Read-only; output is a fix list, not a test plan. Triggers on "manual QA", "QA pass", "what's broken", "did this break anything", "find bugs in my diff".
 user-invocable: true
 argument-hint: "[android|ios|web|general] [staged|last|branch|<file>|<PR#>]"
-allowed-tools: Read, Glob, Grep, Bash, Agent, Skill
+allowed-tools: Read, Glob, Grep, Agent
 ---
 
 # Manual QA

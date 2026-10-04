@@ -3,7 +3,7 @@ name: regression
 description: Post-feature verification gate — phase 1 reviews the code (bugs, pitfalls, code smells), phase 2 plays manual tester — it builds and runs the project's test suite on every platform, walks the blast radius, audits against the platform bar, and optionally drives an emulator, simulator or browser when a finding needs the thing running. Auto-detects the feature from git and the platform or area from the repo, so it works after a context compaction. Read-only report with a ship/fix verdict, then offers to fix. Triggers on "regression", "regression testing", "verify the feature we built", "did we break anything", "review and QA what we just shipped".
 user-invocable: true
 argument-hint: "[android|ios|web|general|all] [staged|last|last N|branch|<path>|<PR#>]"
-allowed-tools: Read, Glob, Grep, Bash, Agent, Skill, AskUserQuestion
+allowed-tools: Read, Glob, Grep, Agent, AskUserQuestion
 ---
 
 # Regression
