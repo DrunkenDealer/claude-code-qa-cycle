@@ -103,6 +103,18 @@ general one for non-UI code. If your project has its own UI or design-system ski
 - **A durable record:** a tracker page plus a tooling folder outside the session, so a long run survives
   context compaction and restarts.
 
+## Data, credentials and network
+
+- **No network calls of its own** and no MCP servers. The only outbound command is
+  `git fetch origin pull/<N>/head`, run against your own repository when you ask to review a pull request.
+- **No credentials are read.** `secrets` in `qa.config.json` is a deny-list: the generated agent rules forbid
+  reading those files. `signin` is an optional command you supply to sign a test user into your local dev
+  server. `mkbox` writes a test-only `.env` into a throwaway sandbox.
+- **Local files only.** The tracker, plans and agent notes stay in your tooling folder. `boundary.mjs` reads
+  the memory files you list under `handoffMemory`, read-only.
+- **Permissions:** the skills pre-approve only read-only tools, starting agents and asking you questions.
+  Shell commands and file edits go through your normal Claude Code permission prompts.
+
 ## When to use which
 
 | You want to… | Use |
