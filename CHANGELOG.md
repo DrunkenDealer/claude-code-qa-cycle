@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.2.0 — 2026-10-05
+
+- A definition of done: `done.mjs` checks seven exit criteria (fix-now empty, residuals resolved, last
+  cycle converged, coverage, main green, later triaged, clean exit) and prints a QA CYCLE STATUS block
+  with one verdict — NOT READY, ANOTHER CYCLE, CYCLE CAP, CLEANUP, READY WITH KNOWN ISSUES or READY.
+  The final report opens with it and the tracker page renders it as a banner.
+- `st.mjs pass` records each test pass (units, platforms, sha, new findings by severity) and
+  `st.mjs --triage known|next` sorts the later bucket. `merge.sh` records the sha it gated.
+- New config keys `platforms` and `maxCycles` (default 3; the loop stops and asks at the cap).
+
 ## 1.1.2 — 2026-10-04
 
 - `regression` and `manual-qa` read a pull request's diff with `git fetch origin pull/<N>/head`

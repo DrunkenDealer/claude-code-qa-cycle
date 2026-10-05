@@ -1,7 +1,7 @@
 {
   "name": "qa-cycle",
   "displayName": "QA Cycle",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "description": "Whole-app QA by a team of Claude Code agents: maps every feature, tests each one in parallel, lists the bugs for your approval, fixes them in isolated git worktrees and has a fresh agent verify every fix, cycle after cycle. Also ships /regression and /manual-qa for checking a single change.",
   "author": {
     "name": "Max Shwed",

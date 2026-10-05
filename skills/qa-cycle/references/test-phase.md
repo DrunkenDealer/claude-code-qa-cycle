@@ -24,7 +24,7 @@ U<n> <name>
   load:      small | medium | high
 ```
 
-Order units so high-load ones run alone. Publish the plan as the first version of the tracker.
+Order units so high-load ones run alone. Publish the plan as the first version of the tracker, with the units in `D.units` (`{"U1": {"name": "…", "files": ["paths"]}}`): `done.mjs` checks coverage against them, and a unit's `files` decide when a later commit makes its last pass stale.
 
 ## 3. Tester brief (one `qa-tester` per unit, Sonnet)
 
@@ -39,4 +39,5 @@ Order units so high-load ones run alone. Publish the plan as the first version o
 - Dedupe across units by root cause; group findings that share one fix.
 - Assign IDs, severity and a bucket: **now** (clear fix) vs **later** (needs a product decision or design pass). Severity policy for new findings from any agent: B and M → `now`, `m` → `later` by default (`add.mjs` does it; `--now` only on the user's word); `later` reaches `now` only at the user's gate.
 - Assign each fix-now group a **workstream** by file scope so fixers in parallel don't collide (see fix-verify.md).
+- Record the pass: `st.mjs pass <cycle> <units|all> <B/M/m new findings> --platforms <p,…>` (it stamps main's sha). Without it `done.mjs` can't tell a converged cycle from an untested one.
 - Return the list to the user — counts by severity, then the items — and **stop until they confirm**. Their answers on "later" items become notes on those items.
