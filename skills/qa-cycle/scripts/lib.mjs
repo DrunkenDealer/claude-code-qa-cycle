@@ -45,6 +45,8 @@ export function git(cwd, ...args) {
 export const STATUS = ["open", "fixing", "fixed", "verified", "failed", "deferred"];
 export const SEV = ["B", "M", "m"];
 export const BUCKET = ["now", "later"];
+// How a later item leaves the cycle: shipped as a known issue, or moved to the next release.
+export const TRIAGE = ["known", "next"];
 
 const sleep = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
 const alive = (pid) => { try { process.kill(pid, 0); return true; } catch (e) { return e.code === "EPERM"; } };
@@ -267,7 +269,7 @@ function unionShas(cfg, old, add) {
 
 export const openResiduals = (it) => (it.residuals ?? []).map((r, i) => ({ ...r, n: i + 1 })).filter((r) => r.state === "open");
 
-// patch: {status, verify ("+x" appends), note ("+x" appends), commit, commitAdd, bucket, ws, by, residual[], resolveResidual {n, as}, force}
+// patch: {status, verify ("+x" appends), note ("+x" appends), commit, commitAdd, bucket, triage, ws, by, residual[], resolveResidual {n, as}, force}
 // A `commit` on an item that already has shas only ADDS to them (the merge recorded those); replacing needs --force. Every sha given must be on main, whatever the status.
 // `verified` also needs `by` (an agents.txt verifier that is not a fixer of the item) and no unresolved residual.
 export function updateItems(cfg, ids, patch) {
@@ -296,6 +298,11 @@ export function updateItems(cfg, ids, patch) {
       }
       if (patch.bucket) it.bucket = patch.bucket;
       if (patch.ws) it.ws = patch.ws;
+      if (patch.triage) {
+        if (!TRIAGE.includes(patch.triage)) errs.push(`triage "${patch.triage}" not in ${TRIAGE.join("|")}`);
+        else if (it.bucket !== "later") errs.push(`${id}: --triage sorts the later bucket; ${id} is in ${it.bucket}`);
+        else it.triage = patch.triage;
+      }
       for (const [k, v] of [["--commit", patch.commit], ["commitAdd", patch.commitAdd]]) {
         const bad = patch.force || v === undefined ? [] : badShas(cfg, v);
         if (bad.length) errs.push(`${id}: ${k} ${bad.join(", ")} does not resolve or is not an ancestor of ${cfg.main}; merge it first, fix the sha, or --force`);

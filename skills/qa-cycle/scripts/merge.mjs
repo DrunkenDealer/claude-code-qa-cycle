@@ -12,6 +12,7 @@
 //   stop and print the exact recovery command — it never runs it. `merge.sh --clear-journal` removes the journal after a human
 //   has restored main. The gate runs in its own process group with a watchdog that kills the group if this process is SIGKILLed.
 // Commits are ADDED to the item's `commit` (a partial then its revision accumulate), never replaced.
+// A pass records the gated sha as D.gate {sha, at}; done.mjs reads it as "main is green" while main still sits on that sha.
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, writeFileSync, rmSync } from "node:fs";
 import { join } from "node:path";
@@ -122,6 +123,7 @@ try {
   // (the branch's own shas are not on main, and `verified` later demands an ancestor of main).
   const commit = (shas.length ? shas : equivalentOnMain()).join(", ") || g("rev-parse", "--short", branch).out;
   console.log(updateItems(cfg, ids, { status: target, commitAdd: commit }), "| merged", commit, partial ? "| PARTIAL: items kept at fixing" : "");
+  withTracker(cfg, (D) => { D.gate = { sha: g("rev-parse", "--short", "HEAD").out, at: new Date().toISOString().slice(0, 16) }; });
   rmSync(journalPath, { force: true });
 } catch (e) {
   fail(e instanceof Die ? "FAILED" : "UNEXPECTED ERROR", e instanceof Die ? e.message : e.stack);
