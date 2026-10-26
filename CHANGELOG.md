@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.3 — 2026-10-26
+
+- The example `prod.rule` and its note in `tracker.md` no longer name an environment variable or a
+  URL, and the regression Android reference no longer uses `$ANDROID_HOME`. Behavior is unchanged.
+
 ## 1.2.2 — 2026-10-26
 
 - `agents.mjs set` is renamed `agents.mjs mark` (same arguments).
