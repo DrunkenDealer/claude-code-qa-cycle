@@ -60,7 +60,7 @@ There is ONE copy of the scripts: this skill's `scripts/`. Install by symlinking
 | `sweep.mjs` | Read-only resource sweep: TCP listeners in `sweepPorts` with pid, cwd and whether a `running` agent owns them. Stops nothing. |
 | `mkrules.mjs` | Generate `FIXRULES.md` / `VERIFYRULES.md` from the templates and `qa.config.json`; keeps a differing old file once as `.bak`. Run it from the skill dir after editing the config or a template. |
 
-Config keys beyond the example's basics: `sweepPorts` (port ranges `sweep.mjs` lists), `sandboxLinks` / `sandboxEnvFile` (what `mkbox` links and where it writes the `sandboxEnv` lines; `reap` ignores and removes the same links), `gateSummary` (regex of the gate-output lines `merge.sh` echoes after a pass; e.g. `^ℹ (pass|fail)` for node:test), `gateTimeoutMs`. `prod.rule` is free text for the generated rules: say where the production default can come from (the global environment, a shell outside the agent session) and what overrides it for the session, and always require an explicit `--server`/URL on the command line.
+Config keys beyond the example's basics: `sweepPorts` (port ranges `sweep.mjs` lists), `sandboxLinks` / `sandboxEnvFile` (what `mkbox` links and where it writes the `sandboxEnv` lines; `reap` ignores and removes the same links), `gateSummary` (regex of the gate-output lines `merge.sh` echoes after a pass; e.g. `^ℹ (pass|fail)` for node:test), `gateTimeoutMs`. `prod.rule` is free text for the generated rules: say how a command could reach production by default, and require the local server to be named explicitly on every command.
 
 ### `agents.txt`
 
