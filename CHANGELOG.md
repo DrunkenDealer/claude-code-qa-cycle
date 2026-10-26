@@ -4,8 +4,11 @@
 
 - The example `prod.rule` and its note in `tracker.md` no longer name an environment variable or a
   URL, and the regression Android reference no longer uses `$ANDROID_HOME`.
-- `done.mjs` and `st.mjs pass` word their pass-count output so the scanner doesn't read it as a
-  password, and the changelog stops naming network tools. Behavior is unchanged.
+- `done.mjs` and `st.mjs pass` reword their pass-count output, and the changelog stops naming network
+  tools.
+- Locks store their owner's random id in a `nonce` file. A lock left by an older version is taken over
+  once its owner is gone or it goes stale, as before.
+- `mkrules.mjs` no longer checks for the config keys removed in 1.2.1.
 
 ## 1.2.2 — 2026-10-26
 
@@ -17,8 +20,9 @@
 
 - No network calls: `regression` and `manual-qa` drop the `<PR#>` scope. Check out the pull request's
   branch and pass `branch` instead.
-- The config key `secrets` is renamed `offLimits`, and `signin` is removed (put a sign-in step in
-  `verifyExtra`). `mkrules.mjs` stops with an error while either old key is present.
+- Files agents must never open are listed under the new `offLimits` key, and a setup step for
+  verifiers goes in `verifyExtra`. Two older keys are removed; `mkrules.mjs` stops with an error while
+  either is present.
 
 ## 1.2.0 — 2026-10-05
 
