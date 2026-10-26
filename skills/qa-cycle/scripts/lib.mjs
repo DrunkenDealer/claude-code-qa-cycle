@@ -51,19 +51,19 @@ export const TRIAGE = ["known", "next"];
 const sleep = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
 const alive = (pid) => { try { process.kill(pid, 0); return true; } catch (e) { return e.code === "EPERM"; } };
 
-// Directory lock. A lock is a directory holding `pid` and `token` files; it is created fully formed (written under a
+// Directory lock. A lock is a directory holding `pid` and `nonce` files; it is created fully formed (written under a
 // temp name, then renamed into place) so a reader never sees a half-made one, and rename onto an existing non-empty
 // directory fails, which is the mutual exclusion. A lock is stale when its owner pid is dead or its mtime is older than
 // staleMs (a crashed or SIGKILLed holder never ran its cleanup; a live holder renews the mtime with `heartbeatMs`).
 // Taking over a stale lock is serialized by a short-lived `<lock>.takeover` mutex, and under it the lock is re-read: it is
 // moved aside (atomic rename to a unique name, never rm) only if it is still the very directory seen as stale, so a
-// racer that lost can never remove the winner's fresh lock. release() deletes the lock only while its token is ours.
+// racer that lost can never remove the winner's fresh lock. release() deletes the lock only while its nonce is ours.
 // Released on exit, SIGINT and SIGTERM. Returns the release function.
 const uniq = () => `${process.pid}.${Date.now()}.${randomBytes(4).toString("hex")}`;
 const readTrim = (p) => { try { return readFileSync(p, "utf8").trim(); } catch { return ""; } };
-const identity = (lock) => { // pid, token and inode: changes whenever the directory is replaced
+const identity = (lock) => { // pid, nonce and inode: changes whenever the directory is replaced
   const st = statSync(lock, { throwIfNoEntry: false });
-  return st ? `${readTrim(join(lock, "pid"))}:${readTrim(join(lock, "token"))}:${st.ino}` : null;
+  return st ? `${readTrim(join(lock, "pid"))}:${readTrim(join(lock, "nonce"))}:${st.ino}` : null;
 };
 const staleness = (lock, staleMs) => {
   const st = statSync(lock, { throwIfNoEntry: false });
@@ -109,12 +109,12 @@ function armSignals() {
 }
 
 export function lockDir(lock, { staleMs, waitMs, label = lock, heartbeatMs = 0 }) {
-  const until = Date.now() + waitMs, token = uniq();
+  const until = Date.now() + waitMs, nonce = uniq();
   for (;;) {
-    const tmp = `${lock}.new.${token}`;
+    const tmp = `${lock}.new.${nonce}`;
     mkdirSync(tmp);
     writeFileSync(join(tmp, "pid"), String(process.pid));
-    writeFileSync(join(tmp, "token"), token);
+    writeFileSync(join(tmp, "nonce"), nonce);
     try { renameSync(tmp, lock); break; } catch (e) {
       rmSync(tmp, { recursive: true, force: true });
       if (!["ENOTEMPTY", "EEXIST", "EISDIR"].includes(e.code)) throw e;
@@ -126,9 +126,9 @@ export function lockDir(lock, { staleMs, waitMs, label = lock, heartbeatMs = 0 }
     if (Date.now() > until) throw new Die(`${label} is held by pid ${s?.pid} (${Math.round((s?.age ?? 0) / 1000)}s old); gave up after ${Math.round(waitMs / 1000)}s`);
     sleep(50 + Math.random() * 50);
   }
-  if (readTrim(join(lock, "token")) !== token) throw new Die(`${label}: lost the lock right after taking it`);
+  if (readTrim(join(lock, "nonce")) !== nonce) throw new Die(`${label}: lost the lock right after taking it`);
   let released = false, beat;
-  const mine = () => readTrim(join(lock, "token")) === token;
+  const mine = () => readTrim(join(lock, "nonce")) === nonce;
   if (heartbeatMs) { beat = setInterval(() => { if (mine()) { const t = new Date(); try { utimesSync(lock, t, t); } catch {} } }, heartbeatMs); beat.unref(); }
   const release = () => {
     if (released) return; released = true;
