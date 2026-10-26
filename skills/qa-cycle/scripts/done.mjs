@@ -42,7 +42,7 @@ withTracker(cfg, (D) => {
 
   const last = passes.at(-1);
   crit(3, "Last cycle converged", !!last && last.found.B === 0 && last.found.M === 0, last
-    ? `pass ${passes.length} (cycle ${last.cycle} @ ${last.sha}) found ${last.found.B} B / ${last.found.M} M / ${last.found.m} m`
+    ? `${passes.length} test passes; the last (cycle ${last.cycle} @ ${last.sha}) found ${last.found.B} B / ${last.found.M} M / ${last.found.m} m`
     : "no test pass recorded (st.mjs pass)");
 
   // A pass still counts for a unit while no commit after it touches the unit's files.

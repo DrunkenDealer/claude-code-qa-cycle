@@ -52,7 +52,7 @@ if (status === "pass") {
   if (!cycle || !units || n.length !== 3 || n.some((x) => !Number.isInteger(x) || x < 0))
     die("usage: st.mjs pass <cycle> <U1,U2|all> <B/M/m new findings, e.g. 0/1/3> [--platforms android,ios] [--sha s]");
   const cfg = config(), sha = o.sha ?? cfg.main;
-  if (badShas(cfg, sha).length) die(`pass: ${sha} does not resolve or is not an ancestor of ${cfg.main}`);
+  if (badShas(cfg, sha).length) die(`st.mjs pass: commit ${sha} does not resolve or is not an ancestor of ${cfg.main}`);
   withTracker(cfg, (D) => {
     const known = Object.keys(D.units ?? {});
     const list = units === "all" ? known : units.split(",").filter(Boolean);
@@ -62,7 +62,7 @@ if (status === "pass") {
     const p = { cycle: String(cycle), sha: git(cfg.repo, "rev-parse", "--short", sha).out, at: new Date().toISOString().slice(0, 16),
       units: list, platforms: o.platforms ? o.platforms.split(",") : [], found: { B: n[0], M: n[1], m: n[2] } };
     (D.passes ??= []).push(p);
-    console.log(`pass ${D.passes.length}: cycle ${p.cycle} @ ${p.sha}, ${list.length} unit(s), found ${found}`);
+    console.log(`test passes recorded: ${D.passes.length}; this one: cycle ${p.cycle} @ ${p.sha}, ${list.length} unit(s), found ${found}`);
   });
   process.exit(0);
 }
