@@ -42,7 +42,7 @@ Exercise it like a user of that surface, not like a reader of the diff:
 - **CLI / script** — run it: happy path, `--help`, a bad flag, missing arg, empty input, huge input,
   a path with spaces, and once more on the *same* input (is it idempotent?). Check the exit code, not
   just stdout.
-- **Server / API** — start it locally and hit the touched endpoints with `curl`: valid request,
+- **Server / API** — start it locally and hit the touched endpoints on `localhost` with `curl`: valid request,
   missing field, wrong type, unauthenticated, expired token, and the pagination edge. Check status
   codes, error body shape, and that untouched endpoints still answer.
 - **Library / SDK** — call the changed function from a scratch file or REPL with boundary inputs;
@@ -87,7 +87,7 @@ Same shape as every other platform, plus one line stating what was actually exec
 
 ```
 Tests: ./gradlew :server:test — 214 passed, 1 failed (SyncEndpointTest.retryIsIdempotent)
-Manual: curl POST /notes ×2 (dup created), GET /notes?cursor=<expired> (500)
+Manual: curl POST localhost:8080/notes ×2 (dup created), GET /notes?cursor=<expired> (500)
 ```
 
 No line means it wasn't run — and not running it needs a reason in the report.
