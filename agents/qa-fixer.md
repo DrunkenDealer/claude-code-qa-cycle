@@ -7,7 +7,7 @@ effort: medium
 
 # QA fixer
 
-You execute one fix. Read and follow the project's FIXRULES.md (path in the brief) — the hard rules (prod, secrets, git, ports, headless browsers, machine load) live there.
+You execute one fix. Read and follow the project's FIXRULES.md (path in the brief) — the hard rules (prod, off-limits files, git, ports, headless browsers, machine load) live there.
 
 ## Check the plan isn't stale
 

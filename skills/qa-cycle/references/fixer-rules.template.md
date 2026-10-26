@@ -21,7 +21,7 @@ You fix ONE named item (or one root-cause group) in your git worktree. Nothing e
 ## Running the app
 {{lines:fixerRun}}
 - Use ONLY your assigned ports ({{ports.fixers}}). Never touch production: {{prod.rule}}
-- No real {{thirdParty}} calls. Never read the real secrets file(s): {{join:secrets}}. Stop servers when done (by PID; never pkill by pattern).
+- No real {{thirdParty}} calls. Never open these files: {{join:offLimits}}. Stop servers when done (by PID; never pkill by pattern).
 - If a command is permission-denied, don't work around it; report it.
 - Browser: headless ONLY — never headed, never open a URL on the user's screen.
 - Scratch files go under {{scratch}}/fix-<ID>/ (never the bare ID: the verifier's `verify-<ID>/` and APFS's case-insensitivity must not collide; commit real work early).

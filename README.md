@@ -103,12 +103,11 @@ general one for non-UI code. If your project has its own UI or design-system ski
 - **A durable record:** a tracker page plus a tooling folder outside the session, so a long run survives
   context compaction and restarts.
 
-## Data, credentials and network
+## Data and network
 
-- **No network calls of its own** and no MCP servers.
-- **No credentials are read.** `secrets` in `qa.config.json` is a deny-list: the generated agent rules forbid
-  reading those files. `signin` is an optional command you supply to sign a test user into your local dev
-  server. `mkbox` writes a test-only `.env` into a throwaway sandbox.
+- **No network calls of its own** and no MCP servers. It runs local git, your own build, test and serve
+  commands, and headless browsers against your local server.
+- **Off-limits files.** `offLimits` in `qa.config.json` lists files the generated agent rules forbid opening.
 - **Local files only.** The tracker, plans and agent notes stay in your tooling folder. `boundary.mjs` reads
   the memory files you list under `handoffMemory`, read-only.
 - **Permissions:** the skills pre-approve only read-only tools, starting agents and asking you questions.
@@ -137,7 +136,7 @@ The orchestrator walks you through this on the first run. To do it yourself:
    ```
 
    `qa.config.json` holds your repo path, test, lint and build commands, port ranges, and what must never be
-   touched (production servers, secrets, paid services).
+   touched (production servers, paid services, off-limits files).
 3. Generate the agents' rule files with `node mkrules.mjs`, which writes `FIXRULES.md` and
    `VERIFYRULES.md`.
 4. Add `.claude/worktrees/` to your project's `.gitignore`.

@@ -13,6 +13,7 @@ const a = process.argv.slice(2);
 const opt = (n, d) => (a.includes(n) ? a[a.indexOf(n) + 1] : d);
 const cfgPath = resolve(opt("--config", configPath()));
 const cfg = JSON.parse(readFileSync(cfgPath, "utf8"));
+for (const k of ["secrets", "signin"]) if (k in cfg) { console.error(`config key \`${k}\` was removed in 1.2.1: see CHANGELOG.md`); process.exit(1); }
 cfg.main ??= "main";
 cfg.sandboxDir ??= "sbx";
 cfg.sandboxRoot = resolve(process.env.QA_SCRATCH ?? cfg.scratch ?? "", cfg.sandboxDir);
@@ -24,7 +25,6 @@ const fill = (tpl, missing) => {
   return tpl
     .replace(/^\{\{lines:([\w.]+)\}\}\n/gm, (_, p) => { const v = get(p); if (v != null && !Array.isArray(v)) missing.add(p); return (v ?? []).map((l) => "- " + expand(l)).join("\n") + (v?.length ? "\n" : ""); })
     .replace(/\{\{join:([\w.]+)\}\}/g, (_, p) => { const v = get(p); if (v != null && !Array.isArray(v)) missing.add(p); return v?.length ? expand(v.join("; ")) : "none yet"; })
-    .replace(/\{\{signin\}\}/g, () => (cfg.signin ? `\n  Sign-in helper: \`${expand(cfg.signin)}\`.` : ""))
     .replace(/\{\{([\w.]+)\}\}/g, (_, p) => { const v = get(p); if (v == null || typeof v === "object") { missing.add(p); return _; } return expand(String(v)); });
 };
 

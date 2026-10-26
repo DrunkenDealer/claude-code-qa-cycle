@@ -28,7 +28,7 @@ Order units so high-load ones run alone. Publish the plan as the first version o
 
 ## 3. Tester brief (one `qa-tester` per unit, Sonnet)
 
-- "Read and follow `<tooling>/VERIFYRULES.md`" — testers use the verifier rules (sandbox, ports, prod/secrets, headless, load).
+- "Read and follow `<tooling>/VERIFYRULES.md`" — testers use the verifier rules (sandbox, ports, prod/off-limits, headless, load).
 - Its unit only; its sandbox (`mkbox.sh <unit-id> <port>`: built from the commit of main, `SANDBOX_SHA` records which, test-only env file, own data dirs) and ports.
 - Drive it the way a user would — real headless browser for UI, the real CLI against the local server — plus failure injection by intercepting requests.
 - **Reproduce every finding twice** before reporting it; save the script that reproduces it.
