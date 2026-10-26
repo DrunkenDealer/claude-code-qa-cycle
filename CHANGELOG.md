@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.1 — 2026-10-26
+
+- No network calls: `regression` and `manual-qa` drop the `<PR#>` scope. Check out the pull request's
+  branch and pass `branch` instead.
+- The config key `secrets` is renamed `offLimits`, and `signin` is removed (put a sign-in step in
+  `verifyExtra`). `mkrules.mjs` stops with an error while either old key is present.
+
 ## 1.2.0 — 2026-10-05
 
 - A definition of done: `done.mjs` checks seven exit criteria (fix-now empty, residuals resolved, last
