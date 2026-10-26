@@ -2,7 +2,7 @@
 
 ## 0. Ask first
 
-One `AskUserQuestion` round before anything runs: environments to never touch (prod URLs/env vars exported in the shell, payment/AI providers), whether real third-party calls are allowed, devices/browsers in scope, what "done" means. Write the answers into the rule templates.
+One `AskUserQuestion` round before anything runs: environments to never touch (prod URLs in shell variables, payment/AI providers), whether real third-party calls are allowed, devices/browsers in scope, what "done" means. Write the answers into the rule templates.
 
 ## 1. Feature map
 
@@ -29,7 +29,7 @@ Order units so high-load ones run alone. Publish the plan as the first version o
 ## 3. Tester brief (one `qa-tester` per unit, Sonnet)
 
 - "Read and follow `<tooling>/VERIFYRULES.md`" — testers use the verifier rules (sandbox, ports, prod/off-limits, headless, load).
-- Its unit only; its sandbox (`mkbox.sh <unit-id> <port>`: built from the commit of main, `SANDBOX_SHA` records which, test-only env file, own data dirs) and ports.
+- Its unit only; its sandbox (`mkbox.sh <unit-id> <port>`: built from the commit of main, `SANDBOX_SHA` records which, test-only config file, own data dirs) and ports.
 - Drive it the way a user would — real headless browser for UI, the real CLI against the local server — plus failure injection by intercepting requests.
 - **Reproduce every finding twice** before reporting it; save the script that reproduces it.
 - Report per finding: `title · severity (B blocker / M major / m minor) · where (file/function) · repro steps · script path · expected vs actual`. Then `cases run / passed`. (Format is built into the agent.)

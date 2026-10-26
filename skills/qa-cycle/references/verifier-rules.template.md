@@ -8,7 +8,7 @@ Be adversarial: re-run the original repro, close variants, every intermediate st
 Also run the regression suite your plan's RISKS names (the test files are in your brief), not only your own repro.
 
 ## Setup
-- Sandbox: {{sandboxRoot}}/<ID> (given in your brief): a copy of {{main}} made from the commit (`git archive`), deps linked, built in place, with a TEST-ONLY env file you may read. Its `SANDBOX_SHA` file is the commit it holds — check the fix's commit is an ancestor (`git -C {{repo}} merge-base --is-ancestor <fix-commit> $(cat SANDBOX_SHA)`); if not, report BLOCKED. Work only there; never edit app code outside it.
+- Sandbox: {{sandboxRoot}}/<ID> (given in your brief): a copy of {{main}} made from the commit (`git archive`), deps linked, built in place, with a TEST-ONLY config file you may read. Its `SANDBOX_SHA` file is the commit it holds — check the fix's commit is an ancestor (`git -C {{repo}} merge-base --is-ancestor <fix-commit> $(cat SANDBOX_SHA)`); if not, report BLOCKED. Work only there; never edit app code outside it.
   Start: `cd <sandbox> && {{commands.serve}}` (background; stop by PID when done).
 - Repro scripts, scenarios and evidence you write go in `{{scratch}}/verify-<ID>/` (create it) — not in the sandbox, which `mkbox.sh` rebuilds — and your report names the paths.
 - Never contact production: {{prod.rule}} No real {{thirdParty}} calls. Never open {{join:offLimits}}. No commits.

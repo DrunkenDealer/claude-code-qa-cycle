@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 // agents.mjs add <agentId> <role> <model> <items> [--note t]   (role planner|fixer|verifier|tester|mapper|reviewer|other, model opus|sonnet|haiku|fable|?) upsert a row as running (resume = add again)
-//            set <agentId> running|done|failed|stopped [--note t|+append]
+//            mark <agentId> running|done|failed|stopped [--note t|+append]
 //            queue "<text>"                                     rewrites the single `# QUEUE:` line ("" clears it)
 //            ls [state]
 //            restart [--note t]                                 marks every `running` row `stopped` (note default "session restart"): subagents never survive a session restart, so this is the resume step
 //            stale [hours]                                      lists `running` rows older than N hours (default 6); no process check (ps can't see subagents): after a session restart use `restart`
-// `add` of a fixer row also sets its items that are open|failed to `fixing` (tracker lock). `set` never touches item status. An existing row's role can't change (use a new id).
+// `add` of a fixer row also sets its items that are open|failed to `fixing` (tracker lock). `mark` never touches item status. An existing row's role can't change (use a new id).
 // Every write is a read-modify-write under agents.txt.lock.
 // File: `id | role | model | items | state | started | ended | note`, `#` lines are comments.
 import { readFileSync, writeFileSync, existsSync, renameSync } from "node:fs";
@@ -61,7 +61,7 @@ if (cmd === "add") {
     if (!moved.length) return false;
     console.log("fixing:", moved.join(" "));
   });
-} else if (cmd === "set") {
+} else if (cmd === "mark") {
   const note = flag("--note");
   const [id, state] = a;
   clean(id, "agentId");
@@ -115,4 +115,4 @@ if (cmd === "add") {
 } else if (cmd === "ls") {
   load();
   for (const l of lines) if (!l.startsWith("#") && (!a[0] || parse(l)[4] === a[0])) console.log(l);
-} else die("usage: agents.mjs add|set|queue|restart|ls|stale …");
+} else die("usage: agents.mjs add|mark|queue|restart|ls|stale …");
