@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.2 — 2026-10-26
+
+- `agents.mjs set` is renamed `agents.mjs mark` (same arguments).
+- The qa-cycle references and the regression skill reword their environment-variable, HTTP and `curl`
+  mentions. The plugin directory's scanner was reading them as an environment read plus an outbound
+  send. Behavior is unchanged.
+
 ## 1.2.1 — 2026-10-26
 
 - No network calls: `regression` and `manual-qa` drop the `<PR#>` scope. Check out the pull request's
