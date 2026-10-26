@@ -115,7 +115,7 @@ Detection only — this skill reports, `/clean-up` fixes. Defer every judgement 
 | MVI state/effect shape, logic in the wrong layer | `android-mvi` |
 | DI scoping and graph hygiene | `koin`, `android-hilt` |
 | Module boundaries, dependency direction | `android-multimodule` |
-| HTTP client config, auth, retry, timeouts | `ktor-client` |
+| Network client config, auth, retry, timeouts | `ktor-client` |
 | Duplication, dead code, reuse | `clean-up` (its *Reuse pass*) |
 
 Cap this bucket: the three highest-impact smells in the scope. It is a gate, not a lint run.
@@ -143,7 +143,7 @@ Every one of them opens with a **required build & test step and an opt-in "exerc
 - `references/android.md` — `./gradlew assembleDebug test lint`; then optionally an emulator or attached device (screencap, font scale, deep links, process death). Routes to `android-compose`, `material-3`, `edge-to-edge`, `navigation-3`.
 - `references/ios.md` — `./gradlew allTests` for the KMP half, `xcodebuild build/test`; then optionally a simulator, because the HIG findings there are mostly *feel* — swipe-back, scroll physics, safe areas — which a diff cannot show. Plus the Compose-Multiplatform-on-iOS tells that make an app feel non-native.
 - `references/web.md` — `build`, `test`, `tsc --noEmit`, `lint`; then optionally a real browser via Playwright or `webapp-testing`. The web is the cheapest platform to drive, so the bar for skipping is higher here. WCAG 2.2 AA, responsive, forms, focus, perf.
-- `references/general.md` — everything else. No UI bar to judge against, so the bar is the **existing behavior**: map what already exists (call sites, existing tests, contracts, docs), run the project's own build and test suite, then **exercise it manually** — CLI invocation, `curl` against a local server, a scratch call into the library, a clean + incremental build.
+- `references/general.md` — everything else. No UI bar to judge against, so the bar is the **existing behavior**: map what already exists (call sites, existing tests, contracts, docs), run the project's own build and test suite, then **exercise it manually** — CLI invocation, requests to a local server, a scratch call into the library, a clean + incremental build.
 
 **Screenshots are read back, not just taken.** Contrast, truncation, overlap and layout breakage are visual defects; capturing an image and never opening it proves nothing.
 

@@ -13,7 +13,7 @@ Never audit the diff in isolation. Reconstruct the surface it sits in:
 | Public surface | `Grep` for the changed symbols | Who calls this, and what do they assume? |
 | Existing tests | `Glob` `**/*Test*`, `**/test/**`, `**/*_test.*` | What was already pinned down, and is it still pinned? |
 | Neighbouring code | Read the sibling files | What's the project's convention for this kind of thing? |
-| Contracts | API schema, DB schema/migrations, CLI flags, config keys, serialized formats, env vars | Did the shape change under an existing consumer? |
+| Contracts | API schema, DB schema/migrations, CLI flags, config keys, serialized formats, environment variables | Did the shape change under an existing consumer? |
 | Docs & runbook | README, CHANGELOG, module docs, `--help` text | Is documented behavior now a lie? |
 
 A change that contradicts an existing convention, test, or documented contract is a finding — cite
@@ -42,7 +42,7 @@ Exercise it like a user of that surface, not like a reader of the diff:
 - **CLI / script** — run it: happy path, `--help`, a bad flag, missing arg, empty input, huge input,
   a path with spaces, and once more on the *same* input (is it idempotent?). Check the exit code, not
   just stdout.
-- **Server / API** — start it locally and hit the touched endpoints on `localhost` with `curl`: valid request,
+- **Server / API** — start it locally and send requests to the touched endpoints on `localhost`: valid request,
   missing field, wrong type, unauthenticated, expired token, and the pagination edge. Check status
   codes, error body shape, and that untouched endpoints still answer.
 - **Library / SDK** — call the changed function from a scratch file or REPL with boundary inputs;
@@ -77,7 +77,7 @@ commands or steps a human should run, with the expected result for each — one 
   too, not just the happy one.
 - **Boundaries** — empty, one, many, null/absent, unicode, very large, negative, zero, clock skew,
   timezone/DST.
-- **Config & environment** — a new env var or config key with no default and no failure message; a
+- **Config & environment** — a new environment variable or config key with no default and no failure message; a
   secret read at import time; behavior that differs between local and CI.
 - **Observability** — the new failure mode is loggable and diagnosable; no secret in a log line.
 
@@ -87,7 +87,7 @@ Same shape as every other platform, plus one line stating what was actually exec
 
 ```
 Tests: ./gradlew :server:test — 214 passed, 1 failed (SyncEndpointTest.retryIsIdempotent)
-Manual: curl POST localhost:8080/notes ×2 (dup created), GET /notes?cursor=<expired> (500)
+Manual: POST localhost:8080/notes ×2 (dup created), GET /notes?cursor=<expired> (500)
 ```
 
 No line means it wasn't run — and not running it needs a reason in the report.
