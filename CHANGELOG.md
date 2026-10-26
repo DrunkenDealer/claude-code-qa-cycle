@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.4 — 2026-10-26
+
+- The `st.mjs` subcommand that records a test run is now `st.mjs run` (same arguments), and the
+  tracker keeps those records under `runs`. Records written by 1.2.3 or earlier are not read: record a
+  fresh run for each unit, or rename that key in the tracker to `runs`, before `done.mjs` counts
+  convergence and coverage again.
+
 ## 1.2.3 — 2026-10-26
 
 - The example `prod.rule` and its note in `tracker.md` no longer name an environment variable or a
