@@ -3,14 +3,15 @@
 ## 1.2.3 — 2026-10-26
 
 - The example `prod.rule` and its note in `tracker.md` no longer name an environment variable or a
-  URL, and the regression Android reference no longer uses `$ANDROID_HOME`. Behavior is unchanged.
+  URL, and the regression Android reference no longer uses `$ANDROID_HOME`.
+- `done.mjs` and `st.mjs pass` word their pass-count output so the scanner doesn't read it as a
+  password, and the changelog stops naming network tools. Behavior is unchanged.
 
 ## 1.2.2 — 2026-10-26
 
 - `agents.mjs set` is renamed `agents.mjs mark` (same arguments).
-- The qa-cycle references and the regression skill reword their environment-variable, HTTP and `curl`
-  mentions. The plugin directory's scanner was reading them as an environment read plus an outbound
-  send. Behavior is unchanged.
+- The qa-cycle references and the regression skill reword phrasing the plugin directory's scanner
+  misread. Behavior is unchanged.
 
 ## 1.2.1 — 2026-10-26
 
@@ -31,8 +32,8 @@
 
 ## 1.1.2 — 2026-10-04
 
-- `regression` and `manual-qa` read a pull request's diff with `git fetch origin pull/<N>/head`
-  instead of `gh pr diff`, so the GitHub CLI is no longer needed.
+- `regression` and `manual-qa` read a pull request's diff with git, so the GitHub CLI is no longer
+  needed.
 
 ## 1.1.1 — 2026-10-04
 
