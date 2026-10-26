@@ -61,8 +61,8 @@ Optional by design: skipping is fine, silently skipping is not.
 
 ```bash
 adb devices                                            # a device may already be attached
-$ANDROID_HOME/emulator/emulator -list-avds             # else ~/Library/Android/sdk/emulator/emulator
-$ANDROID_HOME/emulator/emulator -avd <name> &
+emulator -list-avds                                     # SDK emulator/ dir, e.g. ~/Library/Android/sdk/emulator
+emulator -avd <name> &
 adb wait-for-device && ./gradlew installDebug
 adb shell am start -n <pkg>/<activity>
 ```
