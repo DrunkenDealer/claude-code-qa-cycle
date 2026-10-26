@@ -23,12 +23,12 @@ Embed the data as one JSON literal in the page (`const D={...};`) so small scrip
                "triage": "known|next (later items only)",
                "residuals": [ { "text": "…", "state": "open|accepted|fix", "at": "date", "resolvedAt": "date" } ] } ],
   "units": { "U1": { "name": "Editor", "files": ["src/editor", "server/projects.js"] } },
-  "passes": [ { "cycle": "2", "sha": "abc1234", "at": "…", "units": ["U1"], "platforms": ["android", "ios"], "found": { "B": 0, "M": 1, "m": 3 } } ],
+  "runs": [ { "cycle": "2", "sha": "abc1234", "at": "…", "units": ["U1"], "platforms": ["android", "ios"], "found": { "B": 0, "M": 1, "m": 3 } } ],
   "gate": { "sha": "abc1234", "at": "…" },
   "done": { "verdict": "ANOTHER CYCLE", "why": "…", "cycle": "2", "sha": "…", "at": "…", "criteria": [ { "n": 1, "name": "…", "ok": true, "evidence": "…" } ] } }
 ```
 
-`units` is the unit plan, `passes` the test passes (`st.mjs pass`), `gate` the sha the last successful `merge.sh` gated, `done` the last `done.mjs` result.
+`units` is the unit plan, `runs` the test runs (`st.mjs run`), `gate` the sha the last successful `merge.sh` gated, `done` the last `done.mjs` result.
 
 The page shows: a **QA CYCLE STATUS** banner rendered from `D.done` (verdict, the reason, and the seven criteria as ✅/❌ with their evidence; "not checked yet" when `D.done` is missing), a summary strip (counts by severity, fix-now vs later, `verified/total`), the execution plan, workstreams, and a filterable register (bucket, severity, workstream, status). The strip is static HTML; the scripts recompute its six `<b>` values from `D` on every write. Better: let the page compute them itself — give each `<b>` an id and set them from `D.items` in the page script right after the data literal, so the data is the only thing that ever changes.
 
@@ -45,9 +45,9 @@ There is ONE copy of the scripts: this skill's `scripts/`. Install by symlinking
 |---|---|
 | `st.mjs <status\|-> [--verify t\|+t] [--item-note t\|+t] [--commit sha] [--bucket b] [--ws W] [--by agentId] [--residual text] [--resolve-residual n accept\|fix] [--force] ID…` | Set status and fields. `--verify` is the verifier-evidence field; `--item-note` is the item's own note (`--note` is an error — it used to silently mean `--verify`). A leading `+` appends with ` \| `. Validates enums and status moves (`open → verified`, `deferred → verified` … need `--force`); unknown IDs or flags write nothing; `verified` needs commit + verify, every sha an ancestor of main, `--by <verifier agentId>` (not a fixer of the item) and no unresolved residual, unless `--force`; on a verified item `--commit` only adds. `--residual "text"` records a residual (one item); `--resolve-residual <n> accept\|fix` records the user's answer (the orchestrator runs it after the gate). |
 | `st.mjs legacy` | Marks every `verified` item with no commit `legacy: true` (verified before shas were recorded) instead of backfilling; backs the page up to `tracker.html.pre-legacy.<time>`, under the tracker lock; idempotent. |
-| `st.mjs pass <cycle> <units\|all> <B/M/m> [--platforms a,b] [--sha s]` | Record a test pass: units run (`all` = every unit in `D.units` now), platforms, the sha of main tested (default: main now; must be on main) and the count of new findings per severity. Unknown units write nothing. |
+| `st.mjs run <cycle> <units\|all> <B/M/m> [--platforms a,b] [--sha s]` | Record a test run: units run (`all` = every unit in `D.units` now), platforms, the sha of main tested (default: main now; must be on main) and the count of new findings per severity. Unknown units write nothing. |
 | `st.mjs - --triage known\|next ID…` | Sort a `later` item: ship as a known issue, or move to the next release (refused on `now` items). |
-| `done.mjs [--json]` | The definition of done (SKILL.md): checks the seven criteria, prints the QA CYCLE STATUS block as markdown (or JSON), stores it as `D.done` for the page banner. Never runs a gate: criterion 5 trusts `D.gate`. Config: `platforms` (criterion 4 needs a pass on each), `maxCycles` (default 3), `cycle`. |
+| `done.mjs [--json]` | The definition of done (SKILL.md): checks the seven criteria, prints the QA CYCLE STATUS block as markdown (or JSON), stores it as `D.done` for the page banner. Never runs a gate: criterion 5 trusts `D.gate`. Config: `platforms` (criterion 4 needs a run on each), `maxCycles` (default 3), `cycle`. |
 | `boundary.mjs` | Cycle-boundary check: lists the item ids in the project's `.claude/rules/*.md` (`rules` in config, default `<repo>/.claude/rules`) and the handoff memory file(s) (`handoffMemory`, array of paths) with tracker status; flags merged, verified and unknown ones. Read-only. |
 | `st.mjs show ID…` | Read-only: `id \| status \| commit [\| by X] [\| residuals: n open / m]` per item. |
 | `add.mjs ID sev "title" "where" "note" [later] [--now] [--ws W] [--unit N]` | Add an item (refuses duplicates; `ws` defaults to `defaultWs`, else the last item's). Bucket from severity: B/M → `now`; `m` → `later` (status `deferred`) unless `--now`; the 6th argument `later` parks any severity. |

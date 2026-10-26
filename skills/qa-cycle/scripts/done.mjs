@@ -6,8 +6,8 @@
 //
 //  1 Fix-now empty        every bucket-now item is verified
 //  2 Residuals resolved   no residual is still open
-//  3 Converged            the last recorded test pass found 0 new B and 0 new M
-//  4 Coverage             every unit in D.units has a pass on each platform in qa.config `platforms` that no later commit
+//  3 Converged            the last recorded test run found 0 new B and 0 new M
+//  4 Coverage             every unit in D.units has a run on each platform in qa.config `platforms` that no later commit
 //                         touching the unit's files has invalidated (a unit without `files` goes stale on any commit)
 //  5 Main green           D.gate.sha (written by merge.sh after test + lint + build) is main's current sha
 //  6 Later triaged        every later item has triage known|next (st.mjs - --triage known|next ID)
@@ -27,7 +27,7 @@ const maxCycles = Number(cfg.maxCycles ?? 3);
 
 withTracker(cfg, (D) => {
   const items = D.items, now = items.filter((i) => i.bucket === "now"), later = items.filter((i) => i.bucket === "later");
-  const passes = D.passes ?? [], units = D.units ?? {};
+  const runs = D.runs ?? [], units = D.units ?? {};
   const C = [];
   const crit = (n, name, ok, evidence) => C.push({ n, name, ok, evidence });
 
@@ -40,17 +40,17 @@ withTracker(cfg, (D) => {
   const accepted = items.flatMap((i) => (i.residuals ?? []).filter((r) => r.state === "accepted")).length;
   crit(2, "Residuals resolved", !open.length, open.length ? `${open.length} open: ${open.join(", ")}` : `${accepted} accepted, none open`);
 
-  const last = passes.at(-1);
+  const last = runs.at(-1);
   crit(3, "Last cycle converged", !!last && last.found.B === 0 && last.found.M === 0, last
-    ? `${passes.length} test passes; the last (cycle ${last.cycle} @ ${last.sha}) found ${last.found.B} B / ${last.found.M} M / ${last.found.m} m`
-    : "no test pass recorded (st.mjs pass)");
+    ? `${runs.length} test runs; the last (cycle ${last.cycle} @ ${last.sha}) found ${last.found.B} B / ${last.found.M} M / ${last.found.m} m`
+    : "no test run recorded (st.mjs run)");
 
-  // A pass still counts for a unit while no commit after it touches the unit's files.
+  // A run still counts for a unit while no commit after it touches the unit's files.
   const fresh = (p, files) => g("merge-base", "--is-ancestor", p.sha, cfg.main).ok
     && !g("rev-list", "--count", `${p.sha}..${cfg.main}`, ...(files?.length ? ["--", ...files] : [])).out.match(/^[1-9]/);
   const ids = Object.keys(units), stale = [];
   for (const u of ids) {
-    const have = new Set(passes.filter((p) => p.units.includes(u) && fresh(p, units[u].files)).flatMap((p) => p.platforms.length ? p.platforms : ["*"]));
+    const have = new Set(runs.filter((p) => p.units.includes(u) && fresh(p, units[u].files)).flatMap((p) => p.platforms.length ? p.platforms : ["*"]));
     const miss = platforms.length ? platforms.filter((pl) => !have.has(pl) && !have.has("*")) : have.size ? [] : ["any"];
     if (miss.length) stale.push(platforms.length ? `${u} (${miss.join("+")})` : u);
   }

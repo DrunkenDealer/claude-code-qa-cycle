@@ -36,7 +36,7 @@ Testers reuse `/regression` and `/manual-qa` method (their `references/<platform
 1 Map   → `qa-mapper` (read-only) builds the feature map from the code (not from memory)
 2 Plan  → small test units, each one agent's job; show the plan
 3 Test  → one `qa-tester` per unit, each in its own sandbox (mkbox.sh), load-budgeted
-4 List  → dedupe, reproduce, severity + bucket → `st.mjs pass` records the pass → the findings list → STOP for the user
+4 List  → dedupe, reproduce, severity + bucket → `st.mjs run` records the run → the findings list → STOP for the user
 5 Fix   → after the user confirms: workstreams by file scope, one fixer per piece, in worktrees;
           before each spawn, overlap whatever doesn't conflict (plan N+1 while fixing N — orchestration.md › Scheduling)
 6 Merge → `merge.sh` (run it in the background — gates take minutes): one branch at a time onto main, test + lint + build gate, fails closed (order: merge → build → sandbox); medium load, and it refuses while a verifier/tester is running (`--force` overrides)
@@ -65,8 +65,8 @@ QA ends on a verdict, not on a feeling. `scripts/done.mjs` checks seven exit cri
 |---|---|---|
 | 1 | Fix-now empty | every `now` item is `verified` |
 | 2 | Residuals resolved | no residual is still `open` |
-| 3 | Last cycle converged | the last recorded test pass found 0 new B and 0 new M |
-| 4 | Coverage | every unit in the map has a pass on each platform in `platforms` that no later commit touching its files invalidated |
+| 3 | Last cycle converged | the last recorded test run found 0 new B and 0 new M |
+| 4 | Coverage | every unit in the map has a run on each platform in `platforms` that no later commit touching its files invalidated |
 | 5 | Main green | `merge.sh` gated main's current sha |
 | 6 | Later triaged | every `later` item is `known` (ships as a known issue) or `next` (next release) — the user's call at the gate |
 | 7 | Clean exit | no running agent, no worktree, no sandbox left |

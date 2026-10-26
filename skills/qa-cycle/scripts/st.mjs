@@ -11,9 +11,9 @@
 // `legacy` marks every verified item with no commit (verified before shas were recorded) `legacy: true` instead of backfilling a sha
 //   nobody can vouch for; it backs the page up first to tracker.html.pre-legacy.<time> and runs under the tracker lock. Idempotent.
 // --triage known|next sorts a later item: ship it as a known issue, or move it to the next release (done.mjs criterion 6).
-// `pass <cycle> <units|all> <B/M/m> [--platforms a,b] [--sha s]` records one test pass: which units ran, on which platforms,
+// `run <cycle> <units|all> <B/M/m> [--platforms a,b] [--sha s]` records one test run: which units ran, on which platforms,
 //   against which sha of main (default: main now), and how many new findings of each severity it produced. `all` expands to
-//   the units in D.units at that moment. done.mjs reads the passes for criteria 3 (converged) and 4 (coverage).
+//   the units in D.units at that moment. done.mjs reads the runs for criteria 3 (converged) and 4 (coverage).
 // --verify is the verifier-evidence field, --item-note the item's own note. (--note no longer exists: it silently meant --verify.)
 import { copyFileSync } from "node:fs";
 import { config, updateItems, withTracker, git, badShas, die } from "./lib.mjs";
@@ -42,27 +42,27 @@ if (status === "legacy") {
   });
   process.exit(0);
 }
-if (status === "pass") {
+if (status === "run") {
   const [cycle, units, found, ...more] = rest, o = {};
   for (let i = 0; i < more.length; i++) {
-    if (!["--platforms", "--sha"].includes(more[i]) || more[i + 1] === undefined) die(`pass: unknown or empty flag ${more[i]}`);
+    if (!["--platforms", "--sha"].includes(more[i]) || more[i + 1] === undefined) die(`run: unknown or empty flag ${more[i]}`);
     o[more[i].slice(2)] = more[++i];
   }
   const n = String(found ?? "").split("/").map(Number);
   if (!cycle || !units || n.length !== 3 || n.some((x) => !Number.isInteger(x) || x < 0))
-    die("usage: st.mjs pass <cycle> <U1,U2|all> <B/M/m new findings, e.g. 0/1/3> [--platforms android,ios] [--sha s]");
+    die("usage: st.mjs run <cycle> <U1,U2|all> <B/M/m new findings, e.g. 0/1/3> [--platforms android,ios] [--sha s]");
   const cfg = config(), sha = o.sha ?? cfg.main;
-  if (badShas(cfg, sha).length) die(`st.mjs pass: commit ${sha} does not resolve or is not an ancestor of ${cfg.main}`);
+  if (badShas(cfg, sha).length) die(`st.mjs run: commit ${sha} does not resolve or is not an ancestor of ${cfg.main}`);
   withTracker(cfg, (D) => {
     const known = Object.keys(D.units ?? {});
     const list = units === "all" ? known : units.split(",").filter(Boolean);
-    if (!list.length) die("pass: no units (D.units is empty; record the unit plan in the tracker first)");
+    if (!list.length) die("run: no units (D.units is empty; record the unit plan in the tracker first)");
     const unknown = known.length ? list.filter((u) => !known.includes(u)) : [];
-    if (unknown.length) die(`pass: units not in D.units: ${unknown.join(" ")} (nothing written)`);
+    if (unknown.length) die(`run: units not in D.units: ${unknown.join(" ")} (nothing written)`);
     const p = { cycle: String(cycle), sha: git(cfg.repo, "rev-parse", "--short", sha).out, at: new Date().toISOString().slice(0, 16),
       units: list, platforms: o.platforms ? o.platforms.split(",") : [], found: { B: n[0], M: n[1], m: n[2] } };
-    (D.passes ??= []).push(p);
-    console.log(`test passes recorded: ${D.passes.length}; this one: cycle ${p.cycle} @ ${p.sha}, ${list.length} unit(s), found ${found}`);
+    (D.runs ??= []).push(p);
+    console.log(`test runs recorded: ${D.runs.length}; this one: cycle ${p.cycle} @ ${p.sha}, ${list.length} unit(s), found ${found}`);
   });
   process.exit(0);
 }
