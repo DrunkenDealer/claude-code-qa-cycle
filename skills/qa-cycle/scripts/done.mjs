@@ -11,7 +11,8 @@
 //                         touching the unit's files has invalidated (a unit without `files` goes stale on any commit)
 //  5 Main green           D.gate.sha (written by merge.sh after test + lint + build) is main's current sha
 //  6 Later triaged        every later item has triage known|next (st.mjs - --triage known|next ID)
-//  7 Clean exit           no running agents.txt row, no worktree besides the main checkout, no sandbox left
+//  7 Clean exit           no running agents.txt row, no worktree besides the main checkout, no sandbox, no listener in the
+//                         loop's ports that no running row owns, no recorded device still booted (close.mjs frees them)
 //
 // A scoped session (qa.config `scope`) judges only its scope: criteria 1, 2 and 6 and the counts read the items in
 // `scope.ws`, criterion 4 the units in `scope.units`. The rest is listed as out of scope, for another session.
@@ -19,7 +20,7 @@
 // CYCLE CAP when qa.config `cycle` ≥ `maxCycles`, default 3: stop and ask the user) → CLEANUP (only 7 fails) →
 // READY WITH KNOWN ISSUES (all pass, some later items ship as known) → READY.
 import { existsSync, readdirSync } from "node:fs";
-import { config, withTracker, git, agentRows, openResiduals, inScope, SEV, STATUS } from "./lib.mjs";
+import { config, withTracker, git, agentRows, openResiduals, inScope, listeners, leftoverDevices, SEV, STATUS } from "./lib.mjs";
 
 const cfg = config(), asJson = process.argv.includes("--json");
 const g = (...a) => git(cfg.repo, ...a);
@@ -76,8 +77,10 @@ withTracker(cfg, (D) => {
   const running = agentRows(cfg).filter((r) => r.state === "running").map((r) => `${r.role} ${r.id.slice(0, 8)}`);
   const trees = g("worktree", "list", "--porcelain").out.split("\n").filter((l) => l.startsWith("worktree ")).length - 1;
   const boxes = existsSync(cfg.sandboxRoot) ? readdirSync(cfg.sandboxRoot).filter((f) => !f.startsWith(".")).length : 0;
-  const left = [running.length && `${running.length} running agent(s): ${running.join(", ")}`, trees > 0 && `${trees} worktree(s)`, boxes && `${boxes} sandbox(es)`].filter(Boolean);
-  crit(7, "Clean exit", !left.length, left.length ? left.join("; ") : "no agents, worktrees or sandboxes left");
+  const ports = listeners(cfg).filter((l) => !l.owner).map((l) => `:${l.port}`), devices = leftoverDevices(cfg).map((d) => d.id);
+  const left = [running.length && `${running.length} running agent(s): ${running.join(", ")}`, trees > 0 && `${trees} worktree(s)`, boxes && `${boxes} sandbox(es)`,
+    ports.length && `${ports.length} listener(s): ${ports.join(" ")}`, devices.length && `${devices.length} booted device(s): ${devices.join(" ")}`].filter(Boolean);
+  crit(7, "Clean exit", !left.length, left.length ? left.join("; ") + " (close.mjs)" : "no agents, worktrees, sandboxes, listeners or devices left");
 
   const fail = new Set(C.filter((c) => !c.ok).map((c) => c.n));
   const cycle = cfg.cycle ?? last?.cycle ?? "?";

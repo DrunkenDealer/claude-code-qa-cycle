@@ -252,6 +252,42 @@ export function agentRows(cfg) {
     return { id, role, model, items: items ?? "", state, started, ended, note: note.join(" | ") };
   });
 }
+// TCP listeners in the loop's port ranges (qa.config `sweepPorts`, default every range in `ports` plus +1000 for Vite) as
+// {port, pid, cwd, owner}: owner is the `running` agents.txt row whose note/items mention the port or a path in the cwd.
+export function listeners(cfg) {
+  const ranges = (cfg.sweepPorts ?? Object.values(cfg.ports ?? {}).flatMap((v) => [...String(v).matchAll(/(\d+)-(\d+)/g)].flatMap((m) => [[+m[1], +m[2]], [+m[1] + 1000, +m[2] + 1000]])).map(([a, b]) => `${a}-${b}`))
+    .map((r) => r.split("-").map(Number));
+  if (!ranges.length) return [];
+  const running = agentRows(cfg).filter((r) => r.state === "running");
+  const seen = new Set(), found = [];
+  let pid;
+  for (const l of (spawnSync("lsof", ["-nP", "-iTCP", "-sTCP:LISTEN", "-Fpn"], { encoding: "utf8" }).stdout ?? "").split("\n")) {
+    if (l.startsWith("p")) pid = l.slice(1);
+    else if (l.startsWith("n")) {
+      const port = Number(l.match(/:(\d+)$/)?.[1]);
+      if (!ranges.some(([a, b]) => port >= a && port <= b) || seen.has(`${pid}:${port}`)) continue;
+      seen.add(`${pid}:${port}`);
+      const cwd = spawnSync("lsof", ["-a", "-p", pid, "-d", "cwd", "-Fn"], { encoding: "utf8" }).stdout.split("\n").find((x) => x.startsWith("n"))?.slice(1) ?? "?";
+      const owner = running.find((r) => `${r.note} ${r.items}`.includes(String(port)) || (cwd !== "?" && r.note && r.note.split(/\s+/).some((t) => t.length > 3 && cwd.includes(t))));
+      found.push({ port, pid, cwd, owner: owner?.id });
+    }
+  }
+  return found;
+}
+
+// Devices the loop booted are recorded as `device:<serial|UDID>` in an agents.txt note; only those are ever shut down.
+// A recorded device still booted while no running row records it is a leftover. adb/simctl are asked only when some row
+// records a device, so a web project never shells out to them.
+const deviceIds = (rows) => new Set(rows.flatMap((r) => [...r.note.matchAll(/device:(\S+)/g)].map((m) => m[1])));
+export function leftoverDevices(cfg) {
+  const rows = agentRows(cfg), recorded = deviceIds(rows), keep = deviceIds(rows.filter((r) => r.state === "running"));
+  if (!recorded.size) return [];
+  const sh = (cmd, args) => spawnSync(cmd, args, { encoding: "utf8" }).stdout ?? "";
+  const android = sh("adb", ["devices"]).split("\n").slice(1).map((l) => l.split("\t")).filter(([, st]) => st === "device").map(([id]) => ({ id, kind: "android" }));
+  const sims = Object.values(JSON.parse(sh("xcrun", ["simctl", "list", "devices", "booted", "-j"]) || '{"devices":{}}').devices).flat().map((d) => ({ id: d.udid, kind: "ios" }));
+  return [...android, ...sims].filter((d) => recorded.has(d.id) && !keep.has(d.id));
+}
+
 export const itemIds = (field) => String(field ?? "").split(/[,+\s/]+/).filter(Boolean);
 const LEGACY_ROLE = { fixer: "fix", verifier: "verify", tester: "test", planner: "plan" };
 export const isRole = (r, role) => r.role === role || r.role === LEGACY_ROLE[role];

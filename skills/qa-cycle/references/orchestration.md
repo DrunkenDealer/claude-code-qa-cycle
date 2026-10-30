@@ -82,9 +82,9 @@ Agents that finish, get stopped, or are cut off by a restart often leave servers
 - **when** an agent hands back or is reported stopped, after a session restart, before launching a high-load agent, and every ~30 min while agents run;
 - **what** — only processes and devices you can tie to this loop (table below);
 - **keep** anything belonging to an agent whose `agents.txt` row is `running` (its port range / sandbox / device);
-- **stop** the rest by PID (never `pkill` by pattern), then re-check they're gone.
+- **stop** the rest by PID (never `pkill` by pattern), then re-check they're gone. `close.mjs` does the recorded part in one pass (dry run first, then `--yes`): sandboxes, listeners in the loop's ports, recorded devices, merged worktrees.
 
-**Ownership is recorded, not guessed.** Ports and paths identify web leftovers; devices need their ID written to `agents.txt` by whoever boots them (emulator serial / AVD name, simulator UDID). Only recorded things may be stopped. Never touch what the loop didn't start — the user's emulators, simulators, browsers, IDE; if those load the machine, report it and hold high-load agents.
+**Ownership is recorded, not guessed.** Ports and paths identify web leftovers; devices need their ID in `agents.txt` as `device:<serial|UDID>` in the note of the agent you assign it to (`agents.mjs add … --note "sbx/U4 :3940 device:emulator-5560"`) — the brief names the device, so you record it at spawn. Only recorded things may be stopped. Never touch what the loop didn't start — the user's emulators, simulators, browsers, IDE; if those load the machine, report it and hold high-load agents.
 
 ### Per platform
 
@@ -142,7 +142,7 @@ Ask (with a recommended option first) when an item has two defensible behaviors,
 
 1. **Area rules**: refresh the project's own area rules (e.g. `.claude/rules/*.md` lines that name open IDs — "N168 is open here") so they match the tracker: drop what is verified, add what is open or deferred. Don't hand-write new invariants there; verified invariants come from the plans.
 2. **Handoff memory**: update the project memory (cycle, verified count, open IDs, queue, tooling folder, user decisions).
-3. **Tracker**: republish it. Then `sweep.mjs`, `reap.sh --all-merged` (dry run first), and the next-cycle gate with the user.
+3. **Tracker**: republish it. Then `close.mjs` (dry run, then `--yes`) and the next-cycle gate with the user.
 
 ## Resume after a restart
 
