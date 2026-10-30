@@ -4,6 +4,7 @@
   "maxCycles": 3,
   "platforms": ["web"],
   "scope": { "ws": [], "units": [] },
+  "autoAccept": "off",
   "cycleStart": "<sha of main when the cycle started>",
   "repo": "/abs/path/to/checkout",
   "main": "main",

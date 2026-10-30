@@ -132,7 +132,7 @@ Allocate disjoint port ranges per agent and write them in the brief: e.g. fixers
 
 ## Decisions that are the user's
 
-Ask (with a recommended option first) when an item has two defensible behaviors, when a fix only swaps one failure for another, or when the scope of the next cycle changes. Record the answer in the tracker item's note (`st.mjs - --item-note "+…" ID`) so later agents follow it.
+With `autoAccept: recommended` the recommended option is taken and logged (`st.mjs auto`) instead, except for what SKILL.md › Gates always asks. Otherwise ask (with a recommended option first) when an item has two defensible behaviors, when a fix only swaps one failure for another, or when the scope of the next cycle changes. Record the answer in the tracker item's note (`st.mjs - --item-note "+…" ID`) so later agents follow it.
 
 **Don't stall the loop on questions.** A planner that meets a product question proceeds with a flagged default — `PRODUCT Q — <question> — default used: <choice>` — and the plan stays executable. Collect those lines, note them on the item, and ask the user at the next gate; if the answer differs from the default, it's a plan revision (and, if the fix already merged, a new item). The exception: when the default would be destructive or irreversible (data deletion, migration, public API/behavior users rely on), the planner stops and says so, and you ask first.
 

@@ -94,7 +94,7 @@ withTracker(cfg, (D) => {
   const counts = Object.fromEntries(SEV.map((s) => [s, Object.fromEntries(STATUS.map((st) => [st, items.filter((i) => i.sev === s && i.status === st).length]))]));
   D.done = { verdict, why, cycle: String(cycle), sha: head, at: new Date().toISOString().slice(0, 16), criteria: C };
 
-  if (asJson) return console.log(JSON.stringify({ ...D.done, counts }, null, 1));
+  if (asJson) return console.log(JSON.stringify({ ...D.done, counts, auto: D.auto ?? [] }, null, 1));
   const bar = "━".repeat(56);
   const out = [
     "```", bar, `  QA CYCLE STATUS · ${cfg.project ?? "project"} · Cycle ${cycle} · ${D.done.at.slice(0, 10)}`, `  Verdict: ${verdict}  (${why})`, bar, "```", "",
@@ -105,6 +105,7 @@ withTracker(cfg, (D) => {
   ];
   const openRes = items.flatMap((i) => openResiduals(i).map((r) => `- [ ] ${i.id}#${r.n} — ${r.text}`));
   if (openRes.length) out.push("", "**Open residuals (the user decides)**", ...openRes);
+  if (D.auto?.length) out.push("", "**Auto-decided (autoAccept: recommended) — the user may revisit any**", ...D.auto.map((a) => `- ${a.at} — ${a.text}`));
   if (later.length) out.push("", "**Later**", ...later.map((i) => `- ${i.id} ${i.sev} ${i.triage ?? "UNTRIAGED"} — ${i.title}`));
   if (outside.length) out.push("", `**Out of scope (${cfg.scope.ws.join(", ")} only; left for another session — the user decides)**`, ...outside.map((i) => `- ${i.id} ${i.sev} ${i.ws} ${i.bucket}/${i.status} — ${i.title}`));
   console.log(out.join("\n"));

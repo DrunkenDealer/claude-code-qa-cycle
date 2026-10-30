@@ -14,6 +14,8 @@
 // `run <cycle> <units|all> <B/M/m> [--platforms a,b] [--sha s]` records one test run: which units ran, on which platforms,
 //   against which sha of main (default: main now), and how many new findings of each severity it produced. `all` expands to
 //   the units in D.units at that moment. done.mjs reads the runs for criteria 3 (converged) and 4 (coverage).
+// `auto "<decision> — <option taken> [IDs]"` logs a decision taken on the user's standing autoAccept word (D.auto; done.mjs
+//   lists them in the report). Refused unless qa.config autoAccept is "recommended".
 // --verify is the verifier-evidence field, --item-note the item's own note. (--note no longer exists: it silently meant --verify.)
 import { copyFileSync } from "node:fs";
 import { config, updateItems, withTracker, git, badShas, die } from "./lib.mjs";
@@ -40,6 +42,13 @@ if (status === "legacy") {
     for (const i of todo) i.legacy = true;
     console.log(`marked ${todo.length} legacy: ${todo.map((i) => i.id).join(" ")}`);
   });
+  process.exit(0);
+}
+if (status === "auto") {
+  const cfg = config(), text = rest.join(" ").trim();
+  if (cfg.autoAccept !== "recommended") die('st.mjs auto: qa.config autoAccept is not "recommended", so this decision is the user\'s: ask');
+  if (!text) die('usage: st.mjs auto "<decision> — <option taken> [IDs]"');
+  withTracker(cfg, (D) => { (D.auto ??= []).push({ at: new Date().toISOString().slice(0, 16), text }); console.log(`auto-decision ${D.auto.length} logged`); });
   process.exit(0);
 }
 if (status === "run") {

@@ -60,6 +60,10 @@ Installed as a plugin, the agent types and the sibling skills carry the plugin p
 
 Everything else runs without asking: dispatching, merging, re-dispatching a failed fix, logging new findings, republishing the tracker.
 
+**One gate, one packet.** Batch everything pending — the list, minors to pull in, product questions, residuals — into one `AskUserQuestion` round, recommended option first. When the loop blocks on the user, send a `PushNotification` too (if the tool exists) so an away user knows. While the gate is open, keep slots busy with read-only work that doesn't pre-empt the answer: start `qa-planner`s on the B/M items (plans are cheap to drop if the user re-buckets); never a fixer, merge or `--now` before the go-ahead.
+
+**Auto-accept (opt-in).** At step 0 ask once: `autoAccept: off` (default: ask at every gate) or `recommended` (take the recommended option without asking). With `recommended`, take it, log it with `st.mjs auto "<decision> — <option> [IDs]"` (refused when the config says off) and the final report lists every auto-decision. Always ask anyway for: anything destructive or irreversible (data loss, migrations, deleting user files, public behavior people rely on), a residual that leaves a B or M defect, pulling an out-of-scope item in, CYCLE CAP, anything touching production, secrets or paid services, and any permission an agent was denied. In doubt → ask. Auto-accept answers gates; it never grants tool permissions — at step 0, list the commands the loop will run and suggest narrow allow rules so background agents don't stall on permission prompts.
+
 ## Definition of done
 
 QA ends on a verdict, not on a feeling. `scripts/done.mjs` checks seven exit criteria against the tracker, git and `agents.txt` and prints the **QA CYCLE STATUS** block. Run it at every cycle boundary and before the final report; the user may override a criterion at step 0 (record it in `qa.config.json`).
@@ -92,4 +96,4 @@ Verdict, first match wins: **NOT READY** (1, 2, 5 or 6 fails) → **ANOTHER CYCL
 - Status replies: counts (verified / fixed-awaiting-verify / fixing), then only what changed — new findings, failures, trade-offs. No narration of tool calls.
 - Every finding and failure in user-facing text gets its ID and a one-line plain description.
 - When a fix trades one failure for another, say both sides and which you'd pick; don't bury it in a verifier note.
-- Final report: opens with `done.mjs`'s status block (verdict, criteria table, counts, open residuals, later triage), then the trade-offs you decided, the hands-on checks only the user can do, anything uncommitted outside the repo, and "nothing pushed".
+- Final report: opens with `done.mjs`'s status block (verdict, criteria table, counts, open residuals, auto-decisions, later triage, out of scope), then the trade-offs you decided, the hands-on checks only the user can do, anything uncommitted outside the repo, and "nothing pushed".
