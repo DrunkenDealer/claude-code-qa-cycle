@@ -2,7 +2,7 @@
 
 ## 0. Ask first
 
-One `AskUserQuestion` round before anything runs: environments to never touch (prod URLs in shell variables, payment/AI providers), whether real third-party calls are allowed, devices/browsers in scope, what "done" means. Write the answers into the rule templates.
+One `AskUserQuestion` round before anything runs: the scope (the whole app, or an area or change — record a scoped session as `scope: {"ws": [...], "units": [...]}` in `qa.config.json`; SKILL.md non-negotiable 8), environments to never touch (prod URLs in shell variables, payment/AI providers), whether real third-party calls are allowed, devices/browsers in scope, what "done" means. Write the answers into the rule templates.
 
 ## 1. Feature map
 

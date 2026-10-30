@@ -13,11 +13,13 @@
 //  6 Later triaged        every later item has triage known|next (st.mjs - --triage known|next ID)
 //  7 Clean exit           no running agents.txt row, no worktree besides the main checkout, no sandbox left
 //
+// A scoped session (qa.config `scope`) judges only its scope: criteria 1, 2 and 6 and the counts read the items in
+// `scope.ws`, criterion 4 the units in `scope.units`. The rest is listed as out of scope, for another session.
 // Verdict: NOT READY (1, 2, 5 or 6 fails: work or a user decision is pending) → ANOTHER CYCLE (3 or 4 fails; becomes
 // CYCLE CAP when qa.config `cycle` ≥ `maxCycles`, default 3: stop and ask the user) → CLEANUP (only 7 fails) →
 // READY WITH KNOWN ISSUES (all pass, some later items ship as known) → READY.
 import { existsSync, readdirSync } from "node:fs";
-import { config, withTracker, git, agentRows, openResiduals, SEV, STATUS } from "./lib.mjs";
+import { config, withTracker, git, agentRows, openResiduals, inScope, SEV, STATUS } from "./lib.mjs";
 
 const cfg = config(), asJson = process.argv.includes("--json");
 const g = (...a) => git(cfg.repo, ...a);
@@ -26,15 +28,17 @@ const platforms = cfg.platforms ?? [];
 const maxCycles = Number(cfg.maxCycles ?? 3);
 
 withTracker(cfg, (D) => {
-  const items = D.items, now = items.filter((i) => i.bucket === "now"), later = items.filter((i) => i.bucket === "later");
+  const items = D.items.filter((i) => inScope(cfg, i)), outside = D.items.filter((i) => !inScope(cfg, i));
+  const now = items.filter((i) => i.bucket === "now"), later = items.filter((i) => i.bucket === "later");
+  const outNote = outside.length ? `; ${outside.length} out of scope (not judged)` : "";
   const runs = D.runs ?? [], units = D.units ?? {};
   const C = [];
   const crit = (n, name, ok, evidence) => C.push({ n, name, ok, evidence });
 
   const notDone = now.filter((i) => i.status !== "verified");
-  crit(1, "Fix-now empty", !notDone.length, notDone.length
+  crit(1, "Fix-now empty", !notDone.length, (notDone.length
     ? `${notDone.length} not verified: ${notDone.map((i) => `${i.id} ${i.status}`).join(", ")}`
-    : `${now.length}/${now.length} verified`);
+    : `${now.length}/${now.length} verified`) + outNote);
 
   const open = items.flatMap((i) => openResiduals(i).map((r) => `${i.id}#${r.n}`));
   const accepted = items.flatMap((i) => (i.residuals ?? []).filter((r) => r.state === "accepted")).length;
@@ -48,7 +52,7 @@ withTracker(cfg, (D) => {
   // A run still counts for a unit while no commit after it touches the unit's files.
   const fresh = (p, files) => g("merge-base", "--is-ancestor", p.sha, cfg.main).ok
     && !g("rev-list", "--count", `${p.sha}..${cfg.main}`, ...(files?.length ? ["--", ...files] : [])).out.match(/^[1-9]/);
-  const ids = Object.keys(units), stale = [];
+  const ids = Object.keys(units).filter((u) => !cfg.scope?.units?.length || cfg.scope.units.includes(u)), stale = [];
   for (const u of ids) {
     const have = new Set(runs.filter((p) => p.units.includes(u) && fresh(p, units[u].files)).flatMap((p) => p.platforms.length ? p.platforms : ["*"]));
     const miss = platforms.length ? platforms.filter((pl) => !have.has(pl) && !have.has("*")) : have.size ? [] : ["any"];
@@ -99,5 +103,6 @@ withTracker(cfg, (D) => {
   const openRes = items.flatMap((i) => openResiduals(i).map((r) => `- [ ] ${i.id}#${r.n} — ${r.text}`));
   if (openRes.length) out.push("", "**Open residuals (the user decides)**", ...openRes);
   if (later.length) out.push("", "**Later**", ...later.map((i) => `- ${i.id} ${i.sev} ${i.triage ?? "UNTRIAGED"} — ${i.title}`));
+  if (outside.length) out.push("", `**Out of scope (${cfg.scope.ws.join(", ")} only; left for another session — the user decides)**`, ...outside.map((i) => `- ${i.id} ${i.sev} ${i.ws} ${i.bucket}/${i.status} — ${i.title}`));
   console.log(out.join("\n"));
 });

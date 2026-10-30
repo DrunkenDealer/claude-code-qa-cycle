@@ -220,6 +220,10 @@ function stripCounts(html, D) {
   return html;
 }
 
+// A session scoped at step 0 (qa.config `scope.ws`) judges and fills only those workstreams; without it everything is in scope.
+// `scope.units` limits coverage (done.mjs criterion 4) the same way.
+export const inScope = (cfg, it) => !cfg.scope?.ws?.length || cfg.scope.ws.includes(it.ws);
+
 export const knownWs = (D) => new Set([...Object.keys(D.workstreams ?? {}), ...D.items.map((i) => i.ws)]);
 
 export function summary(D) {
