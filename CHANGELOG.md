@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.2.5 — 2026-10-30
+
+- A scoped session: `scope: {"ws": [...], "units": [...]}` in `qa.config.json`. `add.mjs` parks a
+  finding outside it in `later` tagged `scope: "out"` (`--now` pulls it in on the user's word), and
+  `done.mjs` judges only the scope and lists the rest as out of scope.
+- New `close.mjs` (dry run, then `--yes`) frees what the loop left: sandboxes, listeners in the
+  loop's ports, devices recorded as `device:<id>`, merged worktrees. `done.mjs` criterion 7 now also
+  fails on those listeners and devices.
+- `autoAccept: "recommended"` lets the orchestrator take recommended gate options; `st.mjs auto` logs
+  each and `done.mjs` reports them. Destructive, prod, scope and residual decisions are still asked.
+- Gates go out as one batched packet with a push notification, and planners run while the gate waits.
+- New `playbook.mjs` checks the how-to playbook: entries stamped `@sha files:` turn `STALE` when those
+  files change; agents propose entries with `NOTE:` lines.
+- Testers and verifiers checkpoint to `progress.md`; a usage-limit stop is `stopped`, not failed, and
+  resumes from the checkpoint.
+- An eval set (`evals/`) and script tests (`tests/`), with results kept in `evals/history/`.
+
 ## 1.2.4 — 2026-10-26
 
 - The `st.mjs` subcommand that records a test run is now `st.mjs run` (same arguments), and the
