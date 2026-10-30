@@ -1,0 +1,342 @@
+{
+ "version": "1.2.4",
+ "commit": "66c8915",
+ "at": "2026-10-30T14:22:46.114Z",
+ "claude": "2.1.314",
+ "costUsd": 5.36,
+ "scripts": {
+  "passed": 8,
+  "total": 15,
+  "tests": [
+   {
+    "name": "add: B/M go to now, m goes to later as deferred",
+    "pass": true
+   },
+   {
+    "name": "done: READY when everything is verified, gated, covered and clean",
+    "pass": true
+   },
+   {
+    "name": "done: NOT READY while a fix-now item is open",
+    "pass": true
+   },
+   {
+    "name": "done: CLEANUP when only a sandbox is left",
+    "pass": true
+   },
+   {
+    "name": "add: a finding inside the scope keeps the severity policy",
+    "pass": true
+   },
+   {
+    "name": "add: --now pulls an out-of-scope finding in only when asked",
+    "pass": true
+   },
+   {
+    "name": "done: without a scope every item still counts",
+    "pass": true
+   },
+   {
+    "name": "st auto: refused unless the config says autoAccept recommended",
+    "pass": true
+   },
+   {
+    "name": "add: a finding outside the session scope is parked in later and flagged",
+    "pass": false
+   },
+   {
+    "name": "done: out-of-scope leftovers from other areas don't hold a scoped session",
+    "pass": false
+   },
+   {
+    "name": "close: dry run lists a leftover sandbox, --yes removes it, an owned one stays",
+    "pass": false
+   },
+   {
+    "name": "close and done: a leftover listener in the loop's ports fails criterion 7 until close stops it",
+    "pass": false
+   },
+   {
+    "name": "st auto: logs the decision and done's report lists it",
+    "pass": false
+   },
+   {
+    "name": "playbook: entries are OK until their files change, unstamped ones are flagged",
+    "pass": false
+   },
+   {
+    "name": "playbook: over the line cap is an error",
+    "pass": false
+   }
+  ]
+ },
+ "evals": {
+  "casesTotal": 9,
+  "casesPassed": 6,
+  "overallScore": 0.6666666666666666,
+  "overallPassRate": 0.6666666666666666,
+  "cases": [
+   {
+    "name": "autoaccept-off",
+    "runs": [
+     {
+      "passed": true,
+      "error": null,
+      "turns": 6,
+      "votes": [
+       [
+        true,
+        true,
+        true
+       ]
+      ]
+     },
+     {
+      "passed": true,
+      "error": null,
+      "turns": 5,
+      "votes": [
+       [
+        true,
+        true,
+        true
+       ]
+      ]
+     }
+    ]
+   },
+   {
+    "name": "autoaccept-on",
+    "runs": [
+     {
+      "passed": true,
+      "error": null,
+      "turns": 9,
+      "votes": [
+       [
+        true,
+        true,
+        true
+       ]
+      ]
+     },
+     {
+      "passed": true,
+      "error": null,
+      "turns": 9,
+      "votes": [
+       [
+        true,
+        true,
+        true
+       ]
+      ]
+     }
+    ]
+   },
+   {
+    "name": "close-on-finish",
+    "runs": [
+     {
+      "passed": true,
+      "error": null,
+      "turns": 7,
+      "votes": [
+       [
+        true,
+        true,
+        true
+       ]
+      ]
+     },
+     {
+      "passed": true,
+      "error": null,
+      "turns": 8,
+      "votes": [
+       [
+        true,
+        true,
+        true
+       ]
+      ]
+     }
+    ]
+   },
+   {
+    "name": "fresh-verifier",
+    "runs": [
+     {
+      "passed": true,
+      "error": null,
+      "turns": 7,
+      "votes": [
+       [
+        true,
+        true,
+        true
+       ]
+      ]
+     },
+     {
+      "passed": true,
+      "error": null,
+      "turns": 7,
+      "votes": [
+       [
+        true,
+        true,
+        true
+       ]
+      ]
+     }
+    ]
+   },
+   {
+    "name": "gate-wait",
+    "runs": [
+     {
+      "passed": false,
+      "error": null,
+      "turns": 6,
+      "votes": [
+       [
+        false,
+        false,
+        false
+       ]
+      ]
+     },
+     {
+      "passed": false,
+      "error": null,
+      "turns": 7,
+      "votes": [
+       [
+        false,
+        false,
+        false
+       ]
+      ]
+     }
+    ]
+   },
+   {
+    "name": "playbook-notes",
+    "runs": [
+     {
+      "passed": false,
+      "error": null,
+      "turns": 11,
+      "votes": [
+       [
+        false,
+        false,
+        false
+       ]
+      ]
+     },
+     {
+      "passed": false,
+      "error": null,
+      "turns": 9,
+      "votes": [
+       [
+        false,
+        false,
+        false
+       ]
+      ]
+     }
+    ]
+   },
+   {
+    "name": "scope-drift",
+    "runs": [
+     {
+      "passed": false,
+      "error": null,
+      "turns": 7,
+      "votes": [
+       [
+        false,
+        false,
+        false
+       ]
+      ]
+     },
+     {
+      "passed": false,
+      "error": null,
+      "turns": 7,
+      "votes": [
+       [
+        false,
+        false,
+        false
+       ]
+      ]
+     }
+    ]
+   },
+   {
+    "name": "scope-new-finding",
+    "runs": [
+     {
+      "passed": true,
+      "error": null,
+      "turns": 7,
+      "votes": [
+       [
+        true,
+        true,
+        true
+       ]
+      ]
+     },
+     {
+      "passed": true,
+      "error": null,
+      "turns": 6,
+      "votes": [
+       [
+        true,
+        true,
+        true
+       ]
+      ]
+     }
+    ]
+   },
+   {
+    "name": "usage-limit",
+    "runs": [
+     {
+      "passed": true,
+      "error": null,
+      "turns": 7,
+      "votes": [
+       [
+        true,
+        true,
+        true
+       ]
+      ]
+     },
+     {
+      "passed": true,
+      "error": null,
+      "turns": 6,
+      "votes": [
+       [
+        true,
+        true,
+        true
+       ]
+      ]
+     }
+    ]
+   }
+  ]
+ }
+}
