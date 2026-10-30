@@ -120,6 +120,14 @@ for p in $(pgrep -f 'chrome-headless-shell|server/index.js|vite'); do
 
 Allocate disjoint port ranges per agent and write them in the brief: e.g. fixers `37x0–37x9` (dev server +1000), verifiers `39x0–39x9`. Each verifier sandbox is `<scratch>/<sandboxDir>/<ID>` (`scratch` is a durable path, not the session scratchpad), each fixer symlink `<scratch>/wt-<ID>` (some servers refuse paths under dot-directories like `.claude/worktrees`).
 
+## Playbook — how-to that survives the session
+
+`<tooling>/playbook.md` holds what agents keep rediscovering about *driving* the project: how to seed data, reach a screen, start the server, which harness artifact is not a bug. How-to only — no verdicts, no root causes, no "X is fixed" (those live in the tracker and go stale silently).
+
+- **Single writer:** you. Testers and verifiers may end a report with `NOTE: <how-to> (files: <paths it depends on>)`; you fold the useful ones in as `- <how-to> @<short sha of main> files: <paths>` and drop duplicates.
+- **Before every brief**, run `node <tooling>/playbook.mjs`: an entry whose files changed since its sha is `STALE` (re-check it or delete it), an entry without a stamp is `UNSTAMPED`. Keep it under 150 non-empty lines — the script fails over the cap; merge or prune instead of appending.
+- Briefs carry the OK entries as **hints to verify, not facts**: an agent that finds one wrong says so in its `NOTE:` and you fix the entry.
+
 ## Agent lifecycle
 
 - **Launch** in the background; log it with `agents.mjs add <agentId> <role> <model> <items> --note "<sandbox> :<port>"` (the real agent id and the true role: `st.mjs verified --by <id>` checks a `verifier` row, and a `fixer` row for an item can never verify it; `|` and newlines are refused in any field); when it hands back or is stopped, `agents.mjs mark <agentId> done|failed|stopped`. Resuming an agent is `add` again (same id → row goes back to `running`).

@@ -46,6 +46,8 @@ Order is always **merge → build → sandbox**. `merge.sh <branch> <IDs…> [--
 
 ## Verifier brief (`qa-verifier`)
 
+Include the playbook's OK entries for the area as hints to verify (orchestration.md › Playbook).
+
 1. "Read and follow `<tooling>/VERIFYRULES.md`."
 2. Sandbox: `mkbox.sh <ID> <port>` after the merge — a copy made from the commit main points at (`git archive`, not the working tree), built in place, `SANDBOX_SHA` records the commit. Give its path, port range, other verifiers' ranges to avoid, and the fix's commit (the verifier checks it's an ancestor of `SANDBOX_SHA`).
 3. Per item: the original finding, the fix's claim (mechanism in a sentence), and the fixer's stated residuals — to be reported back, not accepted.

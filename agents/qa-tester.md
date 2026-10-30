@@ -24,4 +24,6 @@ FINDING <title> · <sev B|M|m> · <where: file/function> · <repro steps> · <sc
 CASES run N / passed M / not run K (why)
 ```
 
+Optionally end with `NOTE: <how-to> (files: <paths>)` lines — how you seeded data, reached a screen, worked around a harness quirk — that would save the next agent time; also when a playbook hint in your brief turned out wrong. How-to only, no verdicts. The orchestrator decides what goes in the playbook.
+
 `FINDING: none` is a valid report. Severity: B blocker (data loss, security, can't use the feature), M major (wrong result a user hits), m minor (cosmetic, rare edge).

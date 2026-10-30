@@ -28,6 +28,8 @@ Order units so high-load ones run alone. Publish the plan as the first version o
 
 ## 3. Tester brief (one `qa-tester` per unit, Sonnet)
 
+Every brief carries the playbook's OK entries that touch the unit (orchestration.md › Playbook), marked as hints to verify.
+
 - "Read and follow `<tooling>/VERIFYRULES.md`" — testers use the verifier rules (sandbox, ports, prod/off-limits, headless, load).
 - Its unit only; its sandbox (`mkbox.sh <unit-id> <port>`: built from the commit of main, `SANDBOX_SHA` records which, test-only config file, own data dirs) and ports.
 - Drive it the way a user would — real headless browser for UI, the real CLI against the local server — plus failure injection by intercepting requests.
