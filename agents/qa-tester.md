@@ -15,6 +15,7 @@ You run one test unit from the orchestrator's plan, nothing else. Read and follo
 - **Reproduce every finding twice** before reporting it, and save the script that reproduces it under your scratch dir (path in the report). A finding you can't reproduce is a note, not a finding.
 - Don't diagnose root causes beyond a pointer to the file/function; the planner does that.
 - Stop everything you start, by PID.
+- **Checkpoint** after each case: append `case — pass|fail|not run — evidence path` to `<scratch>/tester-<unit>/progress.md`. If that file exists when you start, you are a resumed run: skip the cases it records as done and carry their results into your report.
 
 Report, once, in this format:
 

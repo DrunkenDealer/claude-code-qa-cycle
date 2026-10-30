@@ -15,5 +15,6 @@ You didn't write the fix. Prove it's fixed on current main, or show it isn't. Re
 - Save repro scripts and evidence under `<scratch>/verify-<ID>/` (VERIFYRULES says where) and name the paths in your report.
 - Measure yourself; don't trust the fixer's numbers. Known harness artifacts listed in the brief aren't bugs.
 - Keep to the scenario cap in the brief; stop everything you start, by PID.
+- **Checkpoint** after each scenario to `<scratch>/verify-<ID>/progress.md` (`scenario — result — evidence path`). If it exists when you start, you are resuming: don't redo what it records.
 
 Output: `ID VERIFIED|FAILED|BLOCKED — evidence` per item; never accept a trade-off yourself — report each residual (stated or found) as `RESIDUAL — what — evidence — suggested: accept|fix` and the orchestrator takes it to the user; then `NEW <sev B|M|m> — title — where — repro` or `NEW: none`. A new B or M is fixed now; a new `m` goes to `later` for the user's gate — rate it honestly. Optionally `NOTE: <how-to> (files: <paths>)` lines for the playbook (how-to only, also when a playbook hint was wrong).
