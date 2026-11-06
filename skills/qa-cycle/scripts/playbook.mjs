@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 // playbook.mjs [file] — checks the how-to playbook (default <tooling>/playbook.md) that tester and verifier briefs carry.
 // Each entry is a `- ` line ending in `@<sha> files: a, b`: OK while no commit after <sha> touches those files, STALE once
-// one does (re-check the step, then re-stamp or drop it), UNSTAMPED without a stamp. Exits 1 on any STALE or UNSTAMPED
-// entry, or past the line cap, so the orchestrator fixes the playbook before it goes into the next brief.
+// one does (run the step, then re-stamp or drop it), UNSTAMPED without a stamp, WRONG when flagged `- WRONG:`. Exits 1 on
+// any STALE, UNSTAMPED or WRONG entry, or past the line cap, so the orchestrator fixes the playbook before it goes into
+// the next brief.
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { config, git, die } from "./lib.mjs";
@@ -14,8 +15,8 @@ const lines = readFileSync(file, "utf8").split("\n").filter((l) => l.trim());
 let bad = 0;
 for (const l of lines.filter((l) => l.startsWith("- "))) {
   const m = l.match(/@([0-9a-f]{7,40})\s+files:\s*(.+)$/);
-  let tag = "UNSTAMPED";
-  if (m) {
+  let tag = l.startsWith("- WRONG:") ? "WRONG" : "UNSTAMPED";
+  if (m && tag !== "WRONG") {
     const files = m[2].split(/[,\s]+/).filter(Boolean);
     const known = git(cfg.repo, "rev-parse", "--verify", "--quiet", m[1] + "^{commit}").ok;
     tag = !known ? "STALE (unknown sha)" : git(cfg.repo, "rev-list", "--count", `${m[1]}..${cfg.main}`, "--", ...files).out !== "0" ? "STALE" : "OK";

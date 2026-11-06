@@ -54,7 +54,7 @@ Include the playbook's OK entries for the area as hints to verify (orchestration
 4. Ask it to be adversarial: original repro, close variants, every frame/step not just the end state, what the fix could have broken nearby, and named earlier fixes in the same area to regression-check. It also runs the regression suite its plan's RISKS names (name the test files in the brief). **Cross-item verifier:** when several items merged in the same area in one wave, the orchestrator runs ONE extra verifier over the combined result (every item's invariant together, on the sandbox at the wave's last merge) — once per wave, not per item.
 5. Point to existing scripts but say "measure yourself; don't trust the fixer's numbers" and name known harness artifacts so they aren't reported as bugs.
 6. Cap the scenario count when load matters.
-7. Repro scripts and evidence go in `<scratch>/verify-<ID>/` (VERIFYRULES says so), and the report names the paths. Report: `ID VERIFIED|FAILED|BLOCKED — evidence` per item; every residual (stated or found) as `RESIDUAL — what — evidence — suggested: accept|fix` — verifiers never accept a trade-off; then `NEW <sev B|M|m> — title — where — repro` for anything found.
+7. Repro scripts and evidence go in `<scratch>/verify-<ID>/` (VERIFYRULES says so), and the report names the paths. Report: `ID VERIFIED|FAILED|BLOCKED — evidence` per item; every residual (stated or found) as `RESIDUAL — what — evidence — suggested: accept|fix` — verifiers never accept a trade-off; then `NEW <sev B|M|m> — title — where — repro` for anything found; then a `PLAYBOOK WRONG:` line for every hint that didn't hold (orchestration.md › Playbook).
 
 ## The loop
 

@@ -171,6 +171,7 @@ test("playbook: entries are OK until their files change, unstamped ones are flag
     `- seed the db with seed.py before the insights unit @${f.head} files: a.txt`,
     `- open settings via the deep link @${f.head} files: b.txt`,
     "- the emulator needs a cold boot",
+    `- WRONG: click .account-actions button @${f.head} files: b.txt`,
   ].join("\n") + "\n");
   appendFileSync(join(f.repo, "a.txt"), "changed\n");
   git(f.repo, "commit", "-qam", "touch a");
@@ -179,6 +180,7 @@ test("playbook: entries are OK until their files change, unstamped ones are flag
   assert.match(r.out, /STALE.*seed the db/);
   assert.match(r.out, /OK.*deep link/);
   assert.match(r.out, /UNSTAMPED.*cold boot/);
+  assert.match(r.out, /WRONG.*account-actions/);
 });
 
 test("playbook: over the line cap is an error", () => {

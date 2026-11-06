@@ -34,7 +34,7 @@ Every brief carries the playbook's OK entries that touch the unit (orchestration
 - Its unit only; its sandbox (`mkbox.sh <unit-id> <port>`: built from the commit of main, `SANDBOX_SHA` records which, test-only config file, own data dirs) and ports.
 - Drive it the way a user would — real headless browser for UI, the real CLI against the local server — plus failure injection by intercepting requests.
 - **Reproduce every finding twice** before reporting it; save the script that reproduces it.
-- Report per finding: `title · severity (B blocker / M major / m minor) · where (file/function) · repro steps · script path · expected vs actual`. Then `cases run / passed`. (Format is built into the agent.)
+- Report per finding: `title · severity (B blocker / M major / m minor) · where (file/function) · repro steps · script path · expected vs actual`. Then `cases run / passed`, and a `PLAYBOOK WRONG:` line for every hint that misled it or didn't hold, even if it worked around it. (Format is built into the agent.)
 
 ## 4. Triage into the list
 

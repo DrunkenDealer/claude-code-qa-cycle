@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Agents report a playbook hint that misled them as `PLAYBOOK WRONG: <entry> — <what is true> (script: …)`,
+  never as a `NOTE:`; the orchestrator fixes or deletes the entry before the next brief, and re-stamps a
+  `STALE` one only after something ran it. `playbook.mjs` fails on entries flagged `- WRONG:`.
+
 ## 1.2.5 — 2026-10-30
 
 - A scoped session: `scope: {"ws": [...], "units": [...]}` in `qa.config.json`. `add.mjs` parks a

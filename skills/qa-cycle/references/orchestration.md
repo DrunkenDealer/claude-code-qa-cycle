@@ -125,8 +125,9 @@ Allocate disjoint port ranges per agent and write them in the brief: e.g. fixers
 `<tooling>/playbook.md` holds what agents keep rediscovering about *driving* the project: how to seed data, reach a screen, start the server, which harness artifact is not a bug. How-to only — no verdicts, no root causes, no "X is fixed" (those live in the tracker and go stale silently).
 
 - **Single writer:** you. Testers and verifiers may end a report with `NOTE: <how-to> (files: <paths it depends on>)`; you fold the useful ones in as `- <how-to> @<short sha of main> files: <paths>` and drop duplicates.
-- **Before every brief**, run `node <tooling>/playbook.mjs`: an entry whose files changed since its sha is `STALE` (re-check it or delete it), an entry without a stamp is `UNSTAMPED`. Keep it under 150 non-empty lines — the script fails over the cap; merge or prune instead of appending.
-- Briefs carry the OK entries as **hints to verify, not facts**: an agent that finds one wrong says so in its `NOTE:` and you fix the entry.
+- **Before every brief**, run `node <tooling>/playbook.mjs`: an entry whose files changed since its sha is `STALE`, an entry without a stamp is `UNSTAMPED`, one marked `- WRONG:` is `WRONG`. Re-stamp a STALE entry only after something ran it — an agent's script or your own quick check; reading the code can't catch a wrong selector or behavior, so otherwise delete it or leave it STALE. Keep it under 150 non-empty lines — the script fails over the cap; merge or prune instead of appending.
+- Briefs carry the OK entries as **hints to verify, not facts**. An agent whose hint misled it or didn't hold reports `PLAYBOOK WRONG: <entry> — <what is true> (script: <path>)`, separate from its `NOTE:`s.
+- **Every `PLAYBOOK WRONG` is resolved before the next brief**: fix the entry or delete it — re-stamping it is not a fix. A corrected entry is stamped at current main and keeps the agent's script as evidence (`- <how-to> (script: <path>) @<sha> files: …`). Can't fix it yet → prefix it `- WRONG:` so `playbook.mjs` fails until you do.
 
 ## Agent lifecycle
 
