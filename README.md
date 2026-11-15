@@ -19,12 +19,12 @@ small units, one agent each, a durable record, and someone other than the fixer 
 /plugin install qa-cycle@qa-cycle
 ```
 
-Then open your project and ask **"Run a QA cycle on this app"** (or `/qa-cycle:qa-cycle`). The first run
+Then open your project and ask **"Run a QA cycle on this app"** (or `/qa-cycle:run`). The first run
 walks you through setup. To test one area only, say so: "QA only the notifications area".
 
 | You want to… | Use |
 |---|---|
-| Test the whole app (or one area), then fix and re-verify in cycles | `/qa-cycle:qa-cycle` (`map`, `test`, `fix`, `verify`, `status` run one phase) |
+| Test the whole app (or one area), then fix and re-verify in cycles | `/qa-cycle:run` (`map`, `test`, `fix`, `verify`, `status` run one phase) |
 | Check one feature you just built before shipping | `/qa-cycle:regression` |
 | Get a tester's bug list for a diff or PR | `/qa-cycle:manual-qa` |
 
@@ -60,7 +60,7 @@ flowchart LR
 
 | Component | Model | Role |
 |---|---|---|
-| `qa-cycle` skill | your session model | Orchestrator: dispatches agents, merges, keeps the record, asks you at the gates |
+| `run` skill | your session model | Orchestrator: dispatches agents, merges, keeps the record, asks you at the gates |
 | `qa-mapper` | Sonnet | Builds the feature map (read-only) |
 | `qa-tester` | Sonnet | Tests one unit in a sandbox; never fixes |
 | `qa-planner` | Opus | Writes and revises fix plans (read-only) |
@@ -89,7 +89,7 @@ flowchart LR
 1. Create a tooling folder outside the repo, e.g. `~/.claude/projects/<project>/qa-fix/`, and link the scripts:
 
    ```sh
-   SKILL=<path to the installed plugin>/skills/qa-cycle
+   SKILL=<path to the installed plugin>/skills/run
    cd <tooling>
    for f in $SKILL/scripts/*.mjs $SKILL/scripts/*.sh; do ln -sf "$(realpath "$f")" "$(basename "$f")"; done
    cp $SKILL/scripts/qa.config.example.json qa.config.json

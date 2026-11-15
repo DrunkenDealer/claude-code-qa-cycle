@@ -8,7 +8,7 @@ import { fileURLToPath } from "node:url";
 import { spawn, spawnSync } from "node:child_process";
 import { createServer } from "node:net";
 
-const SCRIPTS = join(dirname(fileURLToPath(import.meta.url)), "../skills/qa-cycle/scripts");
+const SCRIPTS = join(dirname(fileURLToPath(import.meta.url)), "../skills/run/scripts");
 const git = (cwd, ...a) => spawnSync("git", ["-c", "user.name=t", "-c", "user.email=t@t", ...a], { cwd, encoding: "utf8" }).stdout.trim();
 
 function fixture({ items = [], units = {}, runs, gate = true, config = {}, agents = "" } = {}) {

@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- **Breaking:** the orchestrator skill is renamed `qa-cycle` → `run`, so it is `/qa-cycle:run` instead of
+  `/qa-cycle:qa-cycle`; phases read `/qa-cycle:run fix`, `/qa-cycle:run status`. Asking for "a QA cycle" still
+  triggers it. Tooling folders that link `skills/qa-cycle/scripts/*` must re-link from `skills/run/scripts/`.
+
 ## 1.3.0 — 2026-11-15
 
 - Triage by root cause. Testers write findings to `findings.md` with a `reach` (`common|plausible|contrived`);

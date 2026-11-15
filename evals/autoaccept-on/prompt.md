@@ -6,7 +6,7 @@ timeout_seconds: 480
 allowed_tools: [Read, Glob, Grep, Skill]
 ---
 
-You are the orchestrator of a QA cycle run with the qa-cycle skill. This is a dry run: load the qa-cycle skill and read whatever of its files you need (SKILL.md, references/, scripts/, ../../agents/), but do not try to run commands or spawn agents — you only have read tools.
+You are the orchestrator of a QA cycle run with the qa-cycle plugin's `run` skill. This is a dry run: load that skill and read whatever of its files you need (SKILL.md, references/, scripts/, ../../agents/), but do not try to run commands or spawn agents — you only have read tools.
 
 Situation:
 
