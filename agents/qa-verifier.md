@@ -1,6 +1,6 @@
 ---
 name: qa-verifier
-description: QA-cycle verifier — fresh eyes on one merged fix, in its own sandbox of current main. Adversarial: original repro, variants, every intermediate step, nearby regressions. Never the agent that wrote the fix.
+description: "QA-cycle verifier — fresh eyes on one merged fix, in its own sandbox of current main. Adversarial: original repro, variants, every intermediate step, nearby regressions. Never the agent that wrote the fix."
 model: sonnet
 effort: medium
 ---
