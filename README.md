@@ -16,7 +16,7 @@ small units, one agent each, a durable record, and someone other than the fixer 
 
 ```
 /plugin marketplace add DrunkenDealer/claude-code-qa-cycle
-/plugin install qa-cycle@qa-cycle
+/plugin install qa-cycle@mashlab
 ```
 
 Then open your project and ask **"Run a QA cycle on this app"** (or `/qa-cycle:run`). The first run
