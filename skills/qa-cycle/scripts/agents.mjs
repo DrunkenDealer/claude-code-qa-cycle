@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// agents.mjs add <agentId> <role> <model> <items> [--note t]   (role planner|fixer|verifier|tester|mapper|reviewer|other, model opus|sonnet|haiku|fable|?) upsert a row as running (resume = add again)
+// agents.mjs add <agentId> <role> <model> <items> [--note t]   (role planner|fixer|verifier|tester|mapper|triager|reviewer|other, model opus|sonnet|haiku|fable|?) upsert a row as running (resume = add again)
 //            mark <agentId> running|done|failed|stopped [--note t|+append]
 //            queue "<text>"                                     rewrites the single `# QUEUE:` line ("" clears it)
 //            ls [state]
@@ -12,7 +12,7 @@ import { readFileSync, writeFileSync, existsSync, renameSync } from "node:fs";
 import { config, die, withAgents, withTracker, itemIds, isRole } from "./lib.mjs";
 
 const STATES = ["running", "done", "failed", "stopped"];
-const ROLES = ["planner", "fixer", "verifier", "tester", "mapper", "reviewer", "other"];
+const ROLES = ["planner", "fixer", "verifier", "tester", "mapper", "triager", "reviewer", "other"];
 const MODELS = ["opus", "sonnet", "haiku", "fable", "?"];
 const HEAD = "# id | role | model | items | state | started | ended | note";
 const cfg = config();

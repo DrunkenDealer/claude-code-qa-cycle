@@ -11,8 +11,9 @@
 // `legacy` marks every verified item with no commit (verified before shas were recorded) `legacy: true` instead of backfilling a sha
 //   nobody can vouch for; it backs the page up first to tracker.html.pre-legacy.<time> and runs under the tracker lock. Idempotent.
 // --triage known|next sorts a later item: ship it as a known issue, or move it to the next release (done.mjs criterion 6).
-// `run <cycle> <units|all> <B/M/m> [--platforms a,b] [--sha s]` records one test run: which units ran, on which platforms,
-//   against which sha of main (default: main now), and how many new findings of each severity it produced. `all` expands to
+// `run <cycle> <units|all> <B/M/m> [--platforms a,b] [--sha s] [--triage folded/dropped/promoted]` records one test run: which units
+//   ran, on which platforms, against which sha of main (default: main now), how many new items of each severity it produced, and
+//   what triage.mjs folded, dropped and promoted (the line triage.mjs apply prints). `all` expands to
 //   the units in D.units at that moment. done.mjs reads the runs for criteria 3 (converged) and 4 (coverage).
 // `auto "<decision> — <option taken> [IDs]"` logs a decision taken on the user's standing autoAccept word (D.auto; done.mjs
 //   lists them in the report). Refused unless qa.config autoAccept is "recommended".
@@ -54,12 +55,14 @@ if (status === "auto") {
 if (status === "run") {
   const [cycle, units, found, ...more] = rest, o = {};
   for (let i = 0; i < more.length; i++) {
-    if (!["--platforms", "--sha"].includes(more[i]) || more[i + 1] === undefined) die(`run: unknown or empty flag ${more[i]}`);
+    if (!["--platforms", "--sha", "--triage"].includes(more[i]) || more[i + 1] === undefined) die(`run: unknown or empty flag ${more[i]}`);
     o[more[i].slice(2)] = more[++i];
   }
   const n = String(found ?? "").split("/").map(Number);
   if (!cycle || !units || n.length !== 3 || n.some((x) => !Number.isInteger(x) || x < 0))
-    die("usage: st.mjs run <cycle> <U1,U2|all> <B/M/m new findings, e.g. 0/1/3> [--platforms android,ios] [--sha s]");
+    die("usage: st.mjs run <cycle> <U1,U2|all> <B/M/m new findings, e.g. 0/1/3> [--platforms android,ios] [--sha s] [--triage folded/dropped/promoted]");
+  const t = o.triage?.split("/").map(Number);
+  if (t && (t.length !== 3 || t.some((x) => !Number.isInteger(x) || x < 0))) die("run: --triage folded/dropped/promoted, e.g. 112/85/2");
   const cfg = config(), sha = o.sha ?? cfg.main;
   if (badShas(cfg, sha).length) die(`st.mjs run: commit ${sha} does not resolve or is not an ancestor of ${cfg.main}`);
   withTracker(cfg, (D) => {
@@ -69,7 +72,8 @@ if (status === "run") {
     const unknown = known.length ? list.filter((u) => !known.includes(u)) : [];
     if (unknown.length) die(`run: units not in D.units: ${unknown.join(" ")} (nothing written)`);
     const p = { cycle: String(cycle), sha: git(cfg.repo, "rev-parse", "--short", sha).out, at: new Date().toISOString().slice(0, 16),
-      units: list, platforms: o.platforms ? o.platforms.split(",") : [], found: { B: n[0], M: n[1], m: n[2] } };
+      units: list, platforms: o.platforms ? o.platforms.split(",") : [], found: { B: n[0], M: n[1], m: n[2] },
+      ...(t ? { triage: { folded: t[0], dropped: t[1], promoted: t[2] } } : {}) };
     (D.runs ??= []).push(p);
     console.log(`test runs recorded: ${D.runs.length}; this one: cycle ${p.cycle} @ ${p.sha}, ${list.length} unit(s), found ${found}`);
   });

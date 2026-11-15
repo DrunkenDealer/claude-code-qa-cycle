@@ -379,3 +379,65 @@ export function updateItems(cfg, ids, patch) {
   });
   return msg;
 }
+
+// A `@<sha> files: a, b` stamp (playbook.md, dropped.md) is OK while no commit after <sha> on main touches those files.
+export const STAMP = /@([0-9a-f]{7,40})\s+files:\s*(.+)$/;
+export const stampFiles = (s) => s.split(/[,\s]+/).filter(Boolean);
+export function stampState(cfg, sha, files) {
+  if (!git(cfg.repo, "rev-parse", "--verify", "--quiet", sha + "^{commit}").ok) return "STALE (unknown sha)";
+  return git(cfg.repo, "rev-list", "--count", `${sha}..${cfg.main}`, "--", ...files).out !== "0" ? "STALE" : "OK";
+}
+
+// `where` as agents write it ("server/projects.js / saveProject", "src/a.ts:120 saveDraft()") → "server/projects.js#saveProject".
+export function whereKey(where) {
+  const w = String(where ?? "");
+  const file = w.match(/[\w@.-]*(?:\/[\w@.-]+)*\.[A-Za-z]\w*/)?.[0];
+  if (!file) return w.trim().toLowerCase().replace(/\s+/g, "_") || "?";
+  const fn = w.slice(w.indexOf(file) + file.length).replace(/^:\d+/, "").match(/[A-Za-z_$][\w$]*/)?.[0];
+  return fn ? `${file}#${fn}` : file;
+}
+export const keyFile = (key) => key.split("#")[0];
+
+// dropped.md: findings the triager judged unreachable by a real user. Read only by qa-triager; a drop returns to the tracker on a
+// repeat sighting or when its files change (STALE) and the triager judges it reachable.
+export const dropsPath = (cfg) => join(cfg.tooling, "dropped.md");
+const DROP = /^- (D\d+) (\S+) · (.*?) · (.*?) · seen (\d+) \(([^)]*)\) @([0-9a-f]{7,40}) files: (.+)$/;
+export function readDrops(cfg) {
+  const p = dropsPath(cfg);
+  if (!existsSync(p)) return [];
+  return readFileSync(p, "utf8").split("\n").filter((l) => l.startsWith("- ")).map((l) => {
+    const m = l.match(DROP);
+    if (!m) die(`dropped.md: unreadable entry (fix it by hand): ${l}`);
+    const [, id, key, symptom, reason, seen, cycles, sha, files] = m;
+    return { id, key, symptom, reason, seen: +seen, cycles: cycles.split(",").filter(Boolean), sha, files: stampFiles(files) };
+  });
+}
+const dot = (s) => String(s).replace(/·/g, "-").replace(/\s+/g, " ").trim();
+export function writeDrops(cfg, drops) {
+  const body = drops.map((d) => `- ${d.id} ${d.key} · ${dot(d.symptom)} · ${dot(d.reason)} · seen ${d.seen} (${d.cycles.join(",")}) @${d.sha} files: ${d.files.join(", ")}`);
+  const p = dropsPath(cfg), t = `${p}.tmp.${process.pid}`;
+  writeFileSync(t, ["# Dropped findings — read by qa-triager only. `- D<n> <where key> · <symptom> · <reason> · seen <n> (<cycles>) @<sha> files: <paths>`", ...body].join("\n") + "\n");
+  renameSync(t, p);
+}
+export function withDrops(cfg, fn) {
+  const release = lockDir(dropsPath(cfg) + ".lock", { staleMs: 60_000, waitMs: 30_000, label: "dropped lock" });
+  try { const drops = readDrops(cfg); const r = fn(drops); if (r !== false) writeDrops(cfg, drops); return r; } finally { release(); }
+}
+export const nextDropId = (drops) => "D" + (Math.max(0, ...drops.map((d) => +d.id.slice(1))) + 1);
+
+export const REACH = ["common", "plausible", "contrived"];
+// Bucket from severity and reach: B, and an M a real user can hit, go to `now`; m and a contrived M to `later` (status deferred).
+// `now` puts any of them in `now` (only on the user's word); `later` parks any severity; outside the session's scope → later, tagged out.
+export function addItem(cfg, D, f, { now, later, force } = {}) {
+  if (!SEV.includes(f.sev)) die(`severity "${f.sev}" not in ${SEV.join("|")}`);
+  if (f.reach && !REACH.includes(f.reach)) die(`reach "${f.reach}" not in ${REACH.join("|")}`);
+  if (D.items.some((i) => i.id === f.id)) return null;
+  const ws = f.ws ?? cfg.defaultWs ?? D.items.at(-1)?.ws;
+  if (!force && !knownWs(D).has(ws)) die(`workstream "${ws}" is new (known: ${[...knownWs(D)].join(" ")}); --force to create it`);
+  const out = !now && !inScope(cfg, { ws });
+  const isLater = !!later || out || (!now && (f.sev === "m" || (f.sev === "M" && f.reach === "contrived")));
+  const it = { id: f.id, sev: f.sev, ...(f.reach ? { reach: f.reach } : {}), bucket: isLater ? "later" : "now", ws, unit: Number(f.unit ?? 0), title: f.title, where: f.where,
+    note: f.note ?? "", ...(f.symptoms?.length ? { symptoms: f.symptoms } : {}), status: isLater ? "deferred" : "open", commit: "", verify: "", ...(out ? { scope: "out" } : {}) };
+  D.items.push(it);
+  return it;
+}

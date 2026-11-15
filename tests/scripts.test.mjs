@@ -207,3 +207,77 @@ test("agents add: an interrupted fixer resumes on its item", () => {
   assert.equal(r.code, 0);
   assert.match(r.out, /resumed fx1/);
 });
+
+// ── triage: fingerprint → qa-triager → apply ──
+
+const findingsFile = (f, unit, lines) => { mkdirSync(join(f.scratch, `tester-${unit}`), { recursive: true }); writeFileSync(join(f.scratch, `tester-${unit}`, "findings.md"), lines.join("\n") + "\n"); };
+const triageDir = (f) => join(f.scratch, "triage", "c1");
+
+test("add: a contrived M waits in later, a plausible M goes to now", () => {
+  const f = fixture({ items: [item("N1")] });
+  f.run("add.mjs", "N2", "M", "race", "a.txt / save", "", "--reach", "contrived");
+  f.run("add.mjs", "N3", "M", "wrong total", "a.txt / total", "", "--reach", "plausible");
+  const [, n2, n3] = f.tracker().items;
+  assert.deepEqual([n2.bucket, n2.reach, n3.bucket], ["later", "contrived", "now"]);
+});
+
+test("triage: fingerprint batches by file, apply groups by root cause and drops the contrived", () => {
+  const f = fixture({ items: [item("N1")] });
+  findingsFile(f, "U1", [
+    "FINDING total off after delete · M · common · a.txt / recalc · steps · s1.js · 2 vs 3",
+    "EDGE a.txt:40 recalc · NaN when 1e308 typed · needs devtools",
+  ]);
+  findingsFile(f, "U2", ["FINDING badge stale after delete · M · plausible · a.txt / recalc · steps · s2.js · 0 vs 1", "noise line"]);
+  const fp = f.run("fingerprint.mjs");
+  assert.equal(fp.code, 0, fp.out);
+  assert.match(fp.out, /3 findings \(1 EDGE\).*1 batch/);
+  assert.match(readFileSync(join(triageDir(f), "batch-1.md"), "utf8"), /## a\.txt \(3\)/);
+  writeFileSync(join(triageDir(f), "batch-1.out.md"), "GROUP M common W1 | recalc skips deleted rows | a.txt / recalc | U1.1, U2.1\nDROP U1.2 | needs devtools to type 1e308\n");
+  const r = f.run("triage.mjs", "apply");
+  assert.equal(r.code, 0, r.out);
+  assert.match(r.out, /3 findings → 1 items \(1 now, 0 later\) · 1 folded · 1 dropped/);
+  assert.match(r.out, /--triage 1\/1\/0/);
+  const n2 = f.tracker().items.find((i) => i.id === "N2");
+  assert.equal(n2.symptoms.length, 2);
+  assert.match(readFileSync(join(f.tooling, "dropped.md"), "utf8"), /- D1 a\.txt#recalc · NaN when 1e308 typed · needs devtools to type 1e308 · seen 1 \(1\) @\w+ files: a\.txt/);
+});
+
+test("triage: a finding left out of the answer writes nothing", () => {
+  const f = fixture({ items: [item("N1")] });
+  findingsFile(f, "U1", ["FINDING x · M · common · a.txt / f · s · s.js · e", "FINDING y · m · common · b.txt / g · s · s.js · e"]);
+  f.run("fingerprint.mjs");
+  writeFileSync(join(triageDir(f), "batch-1.out.md"), "GROUP M common W1 | x | a.txt / f | U1.1\n");
+  const r = f.run("triage.mjs", "apply");
+  assert.equal(r.code, 1);
+  assert.match(r.out, /U1\.2 is in no GROUP\/DROP/);
+  assert.equal(f.tracker().items.length, 1);
+  assert.equal(existsSync(join(f.tooling, "dropped.md")), false);
+});
+
+test("triage: a drop whose file changed is re-judged; a repeat sighting bumps it, a GROUP promotes it", () => {
+  const f = fixture({ items: [item("N1")] });
+  writeFileSync(join(f.tooling, "dropped.md"), `# d\n- D1 a.txt#f · old edge · contrived · seen 1 (0) @${f.head} files: a.txt\n- D2 b.txt#g · other edge · contrived · seen 2 (0) @${f.head} files: b.txt\n`);
+  appendFileSync(join(f.repo, "b.txt"), "changed\n");
+  git(f.repo, "commit", "-qam", "touch b");
+  findingsFile(f, "U1", ["EDGE a.txt / f · old edge again · contrived"]);
+  f.run("fingerprint.mjs");
+  const batch = readFileSync(join(triageDir(f), "batch-1.md"), "utf8");
+  assert.match(batch, /~ D1 OK/);
+  assert.match(batch, /! D2 STALE/);
+  writeFileSync(join(triageDir(f), "batch-1.out.md"), "DROP U1.1 = D1\n");
+  assert.match(f.run("triage.mjs", "apply").out, /D2 is in no GROUP\/DROP\/KEEP\/REMOVE/);
+  writeFileSync(join(triageDir(f), "batch-1.out.md"), "DROP U1.1 = D1\nGROUP M plausible W1 | g breaks after refactor | b.txt / g | D2\n");
+  const r = f.run("triage.mjs", "apply");
+  assert.equal(r.code, 0, r.out);
+  assert.match(r.out, /1 promoted/);
+  const d = readFileSync(join(f.tooling, "dropped.md"), "utf8");
+  assert.match(d, /D1 .* seen 2 \(0,1\)/);
+  assert.doesNotMatch(d, /D2/);
+  assert.match(f.tracker().items.at(-1).symptoms[0], /D2 \(dropped, seen 2\)/);
+});
+
+test("triage drop: a mid-loop contrived NEW is a new entry, the same where again is a repeat", () => {
+  const f = fixture();
+  assert.match(f.run("triage.mjs", "drop", "a.txt:12 save()", "double tap in 5ms", "timing race").out, /dropped as D1/);
+  assert.match(f.run("triage.mjs", "drop", "a.txt / save", "triple tap", "timing race").out, /repeat sighting of D1 \(seen 2\)/);
+});
