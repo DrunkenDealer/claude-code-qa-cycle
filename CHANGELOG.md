@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.3.0 — 2026-11-15
 
 - Triage by root cause. Testers write findings to `findings.md` with a `reach` (`common|plausible|contrived`);
   a contrived one is a one-line `EDGE` with no repro unless it is security or data loss. `fingerprint.mjs` clusters
