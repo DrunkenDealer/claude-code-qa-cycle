@@ -91,9 +91,7 @@ flowchart LR
 
    ```sh
    cd <tooling>
-   mkdir -p qa-cycle
-   curl -fsSL https://github.com/DrunkenDealer/claude-code-qa-cycle/archive/refs/tags/v<plugin version>.tar.gz \
-     | tar xz -C qa-cycle --strip-components=1
+   git clone --depth 1 --branch v<plugin version> https://github.com/DrunkenDealer/claude-code-qa-cycle.git qa-cycle
    for f in qa-cycle/tools/scripts/*; do ln -sf "$(realpath "$f")" "$(basename "$f")"; done
    cp qa-cycle/tools/qa.config.example.json qa.config.json
    ```
