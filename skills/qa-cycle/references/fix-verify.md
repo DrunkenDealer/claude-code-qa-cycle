@@ -14,11 +14,11 @@ Route each item before spawning a fixer:
 |---|---|
 | Simple and local — a guard, copy, a deterministic test, a small layout rule | `qa-fixer` straight from your brief |
 | Touches state, undo/redo history, ordering, concurrency, persisted data, or spans several files | `qa-planner` → plan → `qa-fixer` executes it |
-| Failed verification | the **planner** revises the plan with the verifier's findings, then a fixer executes the revision on a fresh branch from main — never straight back to a fixer without the revision |
-| Fixer reports `PLAN GAP` | send the gap and its evidence to the planner, then the revised plan to a fixer |
+| Failed verification | the **planner** revises the plan with the verifier's findings, then a **new** fixer executes the revision on a fresh branch from main — never straight back to a fixer without the revision |
+| Fixer reports `PLAN GAP` | send the gap and its evidence to the planner, then the revised plan to a new fixer |
 | Fixer reports `PARTIAL` or `NOT FIXED` | back to `qa-planner` with what the fixer did and found, then a fixer on the revised plan — never straight to another fixer |
 
-Which fixer: a fresh agent with the full brief by default; resume the previous one (`SendMessage`) only when its context is the point — it holds hard-won state a new agent would have to rebuild.
+Which fixer: after FAILED, PARTIAL, NOT FIXED or PLAN GAP the revision always goes to a **brand-new fixer** (new agent id) — the author of a fix that failed is anchored on its own diff and patches on top of it instead of rebuilding to the revised invariant. Its branch and report go in the new brief as reference only; what was worth keeping from its context belongs in the planner's revision. `agents.mjs add` refuses a fixer id that already holds an item now `failed`. Resume a fixer with `SendMessage` only when it was interrupted (usage limit, session restart) — nothing it did has been proven wrong.
 
 The planner's brief is the item (as below) plus: the prior verifier findings, the project skills/rules that cover the area, and "write ROOT CAUSE / INVARIANT / APPROACH / CASES / TESTS / RISKS". Pass the plan verbatim into the fixer's brief and its INVARIANT into the verifier's.
 
@@ -30,7 +30,7 @@ Spawn with worktree isolation. The brief contains:
 1. "Read and follow `<tooling>/FIXRULES.md`" (the filled template — hard rules live there, not repeated per brief). With a plan: its path and the revision to execute, and "run `node <tooling>/stale.mjs <plan>` first".
 2. Branch: `git switch -c <id> main`, current main's short SHA, its port range.
 3. The item verbatim: ID, severity, title, where, repro steps and script paths, expected behavior, any user decision recorded on it.
-4. Pointers: the functions/files involved, related earlier fixes, other fixers working nearby (to keep diffs small).
+4. Pointers: the functions/files involved, related earlier fixes, other fixers working nearby (to keep diffs small). For a revision: the previous attempt's branch and report, marked as reference only — what failed, not a base to build on.
 5. Proof required: a test that fails before and passes after; suite + lint + build clean; the headless repro before → after.
 6. Report format: branch, BASE, commit list, one `ID FIXED|PARTIAL|NOT FIXED|NOT A BUG|PLAN GAP — what — commit — evidence` line per item, plus residuals/trade-offs stated as before → after.
 
@@ -59,10 +59,10 @@ Include the playbook's OK entries for the area as hints to verify (orchestration
 ## The loop
 
 - **VERIFIED** → `st.mjs verified --by <verifier agentId> --verify "<evidence>" ID` (add `--commit <sha>` only to ADD a sha; the merge already recorded the commit). The script refuses `verified` without a commit and evidence, without `--by`, with a `--by` that is not a `verifier` row of `agents.txt`, doesn't list the item, or is a fixer listed for that item, with a commit that doesn't resolve or isn't an ancestor of main (checked for any `--commit`, not only on verify), with an unresolved residual, and from any status but `fixed`. `--commit` never replaces recorded shas without `--force`. `--force` is for historical backfill only. `--verify` is the evidence, `--item-note` the item's own note; `--note` no longer exists. Register the verifier in `agents.txt` (its real agent id, role `verifier`, the item IDs it verifies) before you need `--by`.
-- **FAILED** → status `failed` with the verifier's repro and root cause (`--verify`); the planner revises the plan (ask for a sturdier invariant, not another patch), then a fixer executes it on a fresh branch from current main. After the second failure, the revising planner runs at high effort.
+- **FAILED** → status `failed` with the verifier's repro and root cause (`--verify`); the planner revises the plan (ask for a sturdier invariant, not another patch), then a new fixer executes it on a fresh branch from current main. After the second failure, the revising planner runs at high effort.
 - **BLOCKED** → the environment, not the fix, stopped the check (server refused, sandbox older than the fix, permission denied). Status unchanged; fix the cause (re-run `mkbox.sh`, free the port) and re-dispatch a verifier. Don't treat it as a pass.
 - **NEW** → `add` it to the tracker (from any agent: planner, fixer, verifier or tester). **Severity policy:** B or M → bucket `now`, queue a fixer. `m` → bucket `later` — `add.mjs` does this by default (`--now` overrides, only on the user's word); it waits for the user's gate and is not fixed in this loop. `later` reaches `now` only at that gate. A pre-existing bug found nearby is still logged; the loop runs until nothing fix-now is left.
-- **PARTIAL / NOT FIXED** (fixer results) → to `qa-planner` for a revision, then a fixer; the item stays `fixing` (see Merge for a partial commit).
+- **PARTIAL / NOT FIXED** (fixer results) → to `qa-planner` for a revision, then a new fixer; the item stays `fixing` (see Merge for a partial commit).
 - **RESIDUAL** → record each line on the item (`st.mjs - --residual "<what — evidence>" ID`) and put it to the user with `AskUserQuestion` at the next gate (accept, or fix). **`verified` is refused while any residual is unresolved: the item stays `fixed`** (the simpler of the two options — a verified item never carries an open question), and the verifier's VERIFIED line waits in its evidence. After the user answers, the orchestrator records it: `st.mjs - --resolve-residual <n> accept|fix ID` (n is 1-based; `st.mjs show ID` counts them), then runs `verified`. "fix" also means a new item (`add.mjs`).
 - **NOT A BUG** from a fixer → stays `fixed` until a verifier confirms it independently.
 - **Trade-offs** are the user's call, never a verifier's: every `RESIDUAL` goes to the user at the next gate, with the verifier's suggestion.

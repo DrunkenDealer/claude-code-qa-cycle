@@ -41,7 +41,7 @@ Testers reuse `/regression` and `/manual-qa` method (their `references/<platform
           before each spawn, overlap whatever doesn't conflict (plan N+1 while fixing N — orchestration.md › Scheduling)
 6 Merge → `merge.sh` (run it in the background — gates take minutes): one branch at a time onto main, test + lint + build gate, fails closed (order: merge → build → sandbox); medium load, and it refuses while a verifier/tester is running (`--force` overrides)
 7 Verify→ a FRESH verifier per fix (never the fixer), in a sandbox built from the merged commit (`mkbox.sh`); `st.mjs verified --by <that verifier's agentId>` — the script checks it
-8 Loop  → FAILED / PARTIAL / NOT FIXED → qa-planner revises the plan, then a fixer on a fresh branch; NEW B/M → fix now, NEW m → later (user's gate); repeat 5–7 until every fix-now item is verified
+8 Loop  → FAILED / PARTIAL / NOT FIXED → qa-planner revises the plan, then a NEW fixer (never the one whose fix failed) on a fresh branch; NEW B/M → fix now, NEW m → later (user's gate); repeat 5–7 until every fix-now item is verified
    Boundary (each cycle boundary, and after any wave that merged items named in the area rules) → run `boundary.mjs`, refresh the project's area rules (`.claude/rules/*.md` lines that name IDs) and the handoff memory, republish the tracker
 9 Report→ `done.mjs` decides: ANOTHER CYCLE → back to 3 (the user's gate); otherwise its status block opens the final report
 10 Close → before the final report, and whenever a session ends or pauses: mark every agent that handed back `done`, then
