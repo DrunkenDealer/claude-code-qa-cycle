@@ -1,0 +1,519 @@
+{
+ "version": "1.3.0",
+ "commit": "d0f0b4e",
+ "at": "2026-11-15T12:13:26.208Z",
+ "claude": "2.1.325",
+ "costUsd": 9.11,
+ "scripts": {
+  "passed": 22,
+  "total": 22,
+  "tests": [
+   {
+    "name": "add: B/M go to now, m goes to later as deferred",
+    "pass": true
+   },
+   {
+    "name": "done: READY when everything is verified, gated, covered and clean",
+    "pass": true
+   },
+   {
+    "name": "done: NOT READY while a fix-now item is open",
+    "pass": true
+   },
+   {
+    "name": "done: CLEANUP when only a sandbox is left",
+    "pass": true
+   },
+   {
+    "name": "add: a finding outside the session scope is parked in later and flagged",
+    "pass": true
+   },
+   {
+    "name": "add: a finding inside the scope keeps the severity policy",
+    "pass": true
+   },
+   {
+    "name": "add: --now pulls an out-of-scope finding in only when asked",
+    "pass": true
+   },
+   {
+    "name": "done: out-of-scope leftovers from other areas don't hold a scoped session",
+    "pass": true
+   },
+   {
+    "name": "done: without a scope every item still counts",
+    "pass": true
+   },
+   {
+    "name": "close: dry run lists a leftover sandbox, --yes removes it, an owned one stays",
+    "pass": true
+   },
+   {
+    "name": "close and done: a leftover listener in the loop's ports fails criterion 7 until close stops it",
+    "pass": true
+   },
+   {
+    "name": "st auto: refused unless the config says autoAccept recommended",
+    "pass": true
+   },
+   {
+    "name": "st auto: logs the decision and done's report lists it",
+    "pass": true
+   },
+   {
+    "name": "playbook: entries are OK until their files change, unstamped ones are flagged",
+    "pass": true
+   },
+   {
+    "name": "playbook: over the line cap is an error",
+    "pass": true
+   },
+   {
+    "name": "agents add: a fixer can't be re-added for its own item that failed verification",
+    "pass": true
+   },
+   {
+    "name": "agents add: an interrupted fixer resumes on its item",
+    "pass": true
+   },
+   {
+    "name": "add: a contrived M waits in later, a plausible M goes to now",
+    "pass": true
+   },
+   {
+    "name": "triage: fingerprint batches by file, apply groups by root cause and drops the contrived",
+    "pass": true
+   },
+   {
+    "name": "triage: a finding left out of the answer writes nothing",
+    "pass": true
+   },
+   {
+    "name": "triage: a drop whose file changed is re-judged; a repeat sighting bumps it, a GROUP promotes it",
+    "pass": true
+   },
+   {
+    "name": "triage drop: a mid-loop contrived NEW is a new entry, the same where again is a repeat",
+    "pass": true
+   }
+  ]
+ },
+ "evals": {
+  "casesTotal": 10,
+  "casesPassed": 9,
+  "overallScore": 0.9666666666666666,
+  "overallPassRate": 0.9666666666666666,
+  "cases": [
+   {
+    "name": "autoaccept-off",
+    "runs": [
+     {
+      "passed": true,
+      "error": null,
+      "turns": 7,
+      "votes": [
+       [
+        true,
+        true,
+        true
+       ]
+      ]
+     },
+     {
+      "passed": true,
+      "error": null,
+      "turns": 8,
+      "votes": [
+       [
+        true,
+        true,
+        true
+       ]
+      ]
+     },
+     {
+      "passed": true,
+      "error": null,
+      "turns": 7,
+      "votes": [
+       [
+        true,
+        true,
+        true
+       ]
+      ]
+     }
+    ]
+   },
+   {
+    "name": "autoaccept-on",
+    "runs": [
+     {
+      "passed": true,
+      "error": null,
+      "turns": 7,
+      "votes": [
+       [
+        true,
+        true,
+        true
+       ]
+      ]
+     },
+     {
+      "passed": true,
+      "error": null,
+      "turns": 7,
+      "votes": [
+       [
+        true,
+        true,
+        true
+       ]
+      ]
+     },
+     {
+      "passed": true,
+      "error": null,
+      "turns": 6,
+      "votes": [
+       [
+        true,
+        true,
+        true
+       ]
+      ]
+     }
+    ]
+   },
+   {
+    "name": "close-on-finish",
+    "runs": [
+     {
+      "passed": false,
+      "error": null,
+      "turns": 8,
+      "votes": [
+       [
+        true,
+        false,
+        false
+       ]
+      ]
+     },
+     {
+      "passed": true,
+      "error": null,
+      "turns": 10,
+      "votes": [
+       [
+        false,
+        true,
+        true
+       ]
+      ]
+     },
+     {
+      "passed": true,
+      "error": null,
+      "turns": 5,
+      "votes": [
+       [
+        true,
+        false,
+        true
+       ]
+      ]
+     }
+    ]
+   },
+   {
+    "name": "fresh-verifier",
+    "runs": [
+     {
+      "passed": true,
+      "error": null,
+      "turns": 7,
+      "votes": [
+       [
+        true,
+        true,
+        true
+       ]
+      ]
+     },
+     {
+      "passed": true,
+      "error": null,
+      "turns": 7,
+      "votes": [
+       [
+        true,
+        true,
+        true
+       ]
+      ]
+     },
+     {
+      "passed": true,
+      "error": null,
+      "turns": 5,
+      "votes": [
+       [
+        true,
+        true,
+        true
+       ]
+      ]
+     }
+    ]
+   },
+   {
+    "name": "gate-wait",
+    "runs": [
+     {
+      "passed": true,
+      "error": null,
+      "turns": 7,
+      "votes": [
+       [
+        true,
+        false,
+        true
+       ]
+      ]
+     },
+     {
+      "passed": true,
+      "error": null,
+      "turns": 7,
+      "votes": [
+       [
+        false,
+        true,
+        true
+       ]
+      ]
+     },
+     {
+      "passed": true,
+      "error": null,
+      "turns": 9,
+      "votes": [
+       [
+        true,
+        true,
+        false
+       ]
+      ]
+     }
+    ]
+   },
+   {
+    "name": "playbook-notes",
+    "runs": [
+     {
+      "passed": true,
+      "error": null,
+      "turns": 6,
+      "votes": [
+       [
+        true,
+        true,
+        true
+       ]
+      ]
+     },
+     {
+      "passed": true,
+      "error": null,
+      "turns": 6,
+      "votes": [
+       [
+        true,
+        false,
+        true
+       ]
+      ]
+     },
+     {
+      "passed": true,
+      "error": null,
+      "turns": 6,
+      "votes": [
+       [
+        true,
+        true,
+        true
+       ]
+      ]
+     }
+    ]
+   },
+   {
+    "name": "scope-drift",
+    "runs": [
+     {
+      "passed": true,
+      "error": null,
+      "turns": 6,
+      "votes": [
+       [
+        true,
+        true,
+        true
+       ]
+      ]
+     },
+     {
+      "passed": true,
+      "error": null,
+      "turns": 6,
+      "votes": [
+       [
+        true,
+        true,
+        true
+       ]
+      ]
+     },
+     {
+      "passed": true,
+      "error": null,
+      "turns": 6,
+      "votes": [
+       [
+        true,
+        true,
+        true
+       ]
+      ]
+     }
+    ]
+   },
+   {
+    "name": "scope-new-finding",
+    "runs": [
+     {
+      "passed": true,
+      "error": null,
+      "turns": 7,
+      "votes": [
+       [
+        true,
+        true,
+        true
+       ]
+      ]
+     },
+     {
+      "passed": true,
+      "error": null,
+      "turns": 9,
+      "votes": [
+       [
+        true,
+        true,
+        true
+       ]
+      ]
+     },
+     {
+      "passed": true,
+      "error": null,
+      "turns": 10,
+      "votes": [
+       [
+        true,
+        true,
+        true
+       ]
+      ]
+     }
+    ]
+   },
+   {
+    "name": "triage-noise",
+    "runs": [
+     {
+      "passed": true,
+      "error": null,
+      "turns": 10,
+      "votes": [
+       [
+        true,
+        true,
+        true
+       ]
+      ]
+     },
+     {
+      "passed": true,
+      "error": null,
+      "turns": 10,
+      "votes": [
+       [
+        false,
+        true,
+        true
+       ]
+      ]
+     },
+     {
+      "passed": true,
+      "error": null,
+      "turns": 8,
+      "votes": [
+       [
+        true,
+        true,
+        true
+       ]
+      ]
+     }
+    ]
+   },
+   {
+    "name": "usage-limit",
+    "runs": [
+     {
+      "passed": true,
+      "error": null,
+      "turns": 6,
+      "votes": [
+       [
+        true,
+        true,
+        true
+       ]
+      ]
+     },
+     {
+      "passed": true,
+      "error": null,
+      "turns": 6,
+      "votes": [
+       [
+        true,
+        true,
+        true
+       ]
+      ]
+     },
+     {
+      "passed": true,
+      "error": null,
+      "turns": 6,
+      "votes": [
+       [
+        true,
+        true,
+        true
+       ]
+      ]
+     }
+    ]
+   }
+  ]
+ }
+}
