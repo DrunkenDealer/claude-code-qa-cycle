@@ -5,7 +5,7 @@
 //            ls [state]
 //            restart [--note t]                                 marks every `running` row `stopped` (note default "session restart"): subagents never survive a session restart, so this is the resume step
 //            stale [hours]                                      lists `running` rows older than N hours (default 6); no process check (ps can't see subagents): after a session restart use `restart`
-// `add` of a fixer row also sets its items that are open|failed to `fixing` (tracker lock). `mark` never touches item status. An existing row's role can't change (use a new id).
+// `add` of a fixer row also sets its items that are open|failed to `fixing` (tracker lock); re-adding a fixer id for one of its own items that is now `failed` is refused. `mark` never touches item status. An existing row's role can't change (use a new id).
 // Every write is a read-modify-write under agents.txt.lock.
 // File: `id | role | model | items | state | started | ended | note`, `#` lines are comments.
 import { readFileSync, writeFileSync, existsSync, renameSync } from "node:fs";
@@ -45,6 +45,12 @@ if (cmd === "add") {
   const resumed = mutate(() => {
     const i = rowIdx(id), old = i >= 0 ? parse(lines[i]) : [];
     if (i >= 0 && !isRole({ role: old[1] }, role) && !isRole({ role }, old[1])) die(`${id} is already a ${old[1]} row; a role can't change — register a new agent id as ${role}`);
+    if (i >= 0 && role === "fixer") {
+      const own = new Set(itemIds(old[3]));
+      let failed = [];
+      withTracker(cfg, (D) => { failed = itemIds(items).filter((n) => own.has(n) && D.items.find((x) => x.id === n)?.status === "failed"); return false; });
+      if (failed.length) die(`${id} wrote the fix for ${failed.join(" ")} that failed verification; the revision goes to a new fixer (new agent id), never back to its author (nothing written)`);
+    }
     const row = [id, role, model, items, "running", i >= 0 && old[5] ? old[5] : now(), "", clean(note ?? old[7], "note")].join(" | ");
     i >= 0 ? (lines[i] = row) : lines.push(row);
     save();

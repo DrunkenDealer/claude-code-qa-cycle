@@ -190,3 +190,20 @@ test("playbook: over the line cap is an error", () => {
   assert.notEqual(r.code, 0);
   assert.match(r.out, /cap/i);
 });
+
+test("agents add: a fixer can't be re-added for its own item that failed verification", () => {
+  const f = fixture({ items: [item("N1", { status: "failed" })], agents: "fx1 | fixer | sonnet | N1 | done | x |  | \n" });
+  const r = f.run("agents.mjs", "add", "fx1", "fixer", "sonnet", "N1");
+  assert.equal(r.code, 1);
+  assert.match(r.out, /new fixer/);
+  assert.equal(f.tracker().items[0].status, "failed");
+  assert.equal(f.run("agents.mjs", "add", "fx2", "fixer", "sonnet", "N1").code, 0);
+  assert.equal(f.tracker().items[0].status, "fixing");
+});
+
+test("agents add: an interrupted fixer resumes on its item", () => {
+  const f = fixture({ items: [item("N1", { status: "fixing" })], agents: "fx1 | fixer | sonnet | N1 | stopped | x |  | \n" });
+  const r = f.run("agents.mjs", "add", "fx1", "fixer", "sonnet", "N1");
+  assert.equal(r.code, 0);
+  assert.match(r.out, /resumed fx1/);
+});

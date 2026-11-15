@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- A revision after FAILED, PARTIAL, NOT FIXED or PLAN GAP always goes to a brand-new fixer; the
+  previous fixer's branch and report are reference only, and a fixer is resumed only after an
+  interruption. `agents.mjs add` refuses a fixer id for one of its own items that is now `failed`.
 - Agents report a playbook hint that misled them as `PLAYBOOK WRONG: <entry> — <what is true> (script: …)`,
   never as a `NOTE:`; the orchestrator fixes or deletes the entry before the next brief, and re-stamps a
   `STALE` one only after something ran it. `playbook.mjs` fails on entries flagged `- WRONG:`.
