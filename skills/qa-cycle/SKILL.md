@@ -36,7 +36,7 @@ Testers reuse `/regression` and `/manual-qa` method (their `references/<platform
 1 Map   → `qa-mapper` (read-only) builds the feature map from the code (not from memory)
 2 Plan  → small test units, each one agent's job; show the plan
 3 Test  → one `qa-tester` per unit, each in its own sandbox (mkbox.sh), load-budgeted
-4 List  → dedupe, reproduce, severity + bucket → `st.mjs run` records the run → the findings list → STOP for the user
+4 List  → `fingerprint.mjs` → one `qa-triager` per batch (root-cause groups, folds, drops) → `triage.mjs apply` → `st.mjs run` records the run → the list → STOP for the user
 5 Fix   → after the user confirms: workstreams by file scope, one fixer per piece, in worktrees;
           before each spawn, overlap whatever doesn't conflict (plan N+1 while fixing N — orchestration.md › Scheduling)
 6 Merge → `merge.sh` (run it in the background — gates take minutes): one branch at a time onto main, test + lint + build gate, fails closed (order: merge → build → sandbox); medium load, and it refuses while a verifier/tester is running (`--force` overrides)
@@ -55,7 +55,7 @@ Installed as a plugin, the agent types and the sibling skills carry the plugin p
 - After step 4 (the list), before any fixing.
 - Product decisions inside an item (two valid behaviors, a trade-off between two failures) → planners proceed on a flagged default (`PRODUCT Q — question — default used`) and you put the questions to the user with `AskUserQuestion` (recommended option first) at the next gate; a default that would be destructive or irreversible stops the planner and is asked first.
 - Residuals: verifiers never accept a trade-off — each `RESIDUAL — what — evidence — suggested: accept|fix` is brought to the user (with `AskUserQuestion`) at the next gate; their answer is recorded with `st.mjs - --resolve-residual <n> accept|fix ID`.
-- **Severity policy:** a NEW finding from ANY agent (planner, fixer, verifier, tester) goes to `now` when B or M and to `later` when `m` (`add.mjs` does this by default; `--now` overrides, only after the user said so). `later` items reach `now` only at this gate. Existing items are not moved.
+- **Severity policy:** a finding from ANY agent goes to `now` when B, or M a real user can reach, and to `later` when `m` or a contrived M (`add.mjs`/`triage.mjs` do this by default; `--now` overrides, only after the user said so). A contrived finding that isn't security or data loss is dropped to `dropped.md`, not tracked. `later` items reach `now` only at this gate. Existing items are not moved.
 - Starting the next test cycle.
 
 Everything else runs without asking: dispatching, merging, re-dispatching a failed fix, logging new findings, republishing the tracker.

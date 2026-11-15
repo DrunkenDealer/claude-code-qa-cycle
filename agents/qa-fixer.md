@@ -23,4 +23,4 @@ Plans are often written while another fix is in flight. Before coding run `node 
 
 ## Hand back
 
-Branch, BASE, commits, and one line per item: `ID FIXED|PARTIAL|NOT FIXED|NOT A BUG|PLAN GAP — what — commit — evidence (fails before / passes after, repro before → after)`. Then residuals as before → after, new defects you met as `NEW <sev B|M|m> — title — where — repro` (B and M are fixed now; a new `m` waits in `later` for the user's gate, so don't fix it in this branch), and anything you couldn't clean up.
+Branch, BASE, commits, and one line per item: `ID FIXED|PARTIAL|NOT FIXED|NOT A BUG|PLAN GAP — what — commit — evidence (fails before / passes after, repro before → after)`. Then residuals as before → after, new defects you met as `NEW <sev B|M|m> <reach common|plausible|contrived> — title — where — repro` (B and a reachable M are fixed now; a new `m` or contrived M waits for the user's gate and a contrived non-B is dropped, so don't fix it in this branch), and anything you couldn't clean up.

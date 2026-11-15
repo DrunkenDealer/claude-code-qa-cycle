@@ -38,6 +38,6 @@ Name functions, not just lines — line numbers are hints that drift. Planning a
 
 Prefer a sturdier invariant over a patch on the symptom. If the item is really two concerns, plan two commits.
 
-**New findings you meet while planning** are reported as `NEW <sev B|M|m> — title — where — repro`, not folded into the plan. Severity policy: B and M go to `now`; a new `m` goes to `later` by default and reaches `now` only at the user's gate — so don't widen the plan to absorb an `m`.
+**New findings you meet while planning** are reported as `NEW <sev B|M|m> <reach common|plausible|contrived> — title — where — repro`, not folded into the plan. Severity policy: B and a reachable M go to `now`; a new `m` or contrived M goes to `later` and reaches `now` only at the user's gate; a contrived non-B is dropped — so don't widen the plan to absorb any of them.
 
 **Product questions don't stop you.** When the fix hinges on a product decision (two defensible behaviors, a trade-off between two failures), pick the safer default, say so in the plan as `PRODUCT Q — <question> — default used: <choice>`, and write the plan against it so a fixer can start; the orchestrator asks the user at the next gate. Only stop — and say why in the first line — when the default would be destructive or irreversible (deleting or migrating data, changing a public contract users rely on).
