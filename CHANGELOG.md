@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Triage by root cause. Testers write findings to `findings.md` with a `reach` (`common|plausible|contrived`);
+  a contrived one is a one-line `EDGE` with no repro unless it is security or data loss. `fingerprint.mjs` clusters
+  them by file into batches, one new `qa-triager` agent per batch groups them by the fix that closes them, folds
+  duplicates and drops what no real user reaches, and `triage.mjs apply` writes one tracker item per root cause
+  (with `symptoms`). The orchestrator never reads raw findings.
+- `dropped.md` keeps drops out of the tracker, read only by the triager: a drop returns on a repeat sighting from
+  another path, or when its files change (`STALE`, same stamp as the playbook) and it is judged reachable.
+  A contrived NEW mid-loop goes there with `triage.mjs drop`, which ends the loop of ever-more-contrived variants.
+- A contrived M goes to `later`; `add.mjs --reach`, `st.mjs run --triage folded/dropped/promoted`, role `triager`.
 - A revision after FAILED, PARTIAL, NOT FIXED or PLAN GAP always goes to a brand-new fixer; the
   previous fixer's branch and report are reference only, and a fixer is resumed only after an
   interruption. `agents.mjs add` refuses a fixer id for one of its own items that is now `failed`.
