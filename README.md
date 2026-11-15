@@ -68,7 +68,7 @@ flowchart LR
 | `qa-verifier` | Sonnet | Adversarially re-checks one merged fix; never the agent that wrote it |
 | `qa-triager` | Sonnet | Groups a batch of findings by root cause, folds duplicates, drops what no real user can reach |
 | `regression`, `manual-qa` skills | — | Single-change checks against platform checklists (Material, HIG, WCAG 2.2 AA, non-UI) |
-| [`qa-cycle-tools`](tools/) (npm) | Node.js | Tracker, sandboxes, merge gate, exit criteria (`done`), cleanup (`close`), playbook check |
+| [`tools/`](tools/) | Node.js | Tracker, sandboxes, merge gate, exit criteria (`done`), cleanup (`close`), playbook check |
 
 ## Safety and data
 
@@ -79,27 +79,29 @@ flowchart LR
 - **Isolation.** Own worktree per fixer, own sandbox and ports per tester and verifier. Nothing touches
   production, shared state or real payments; `offLimits` files are never opened.
 - **Local only.** Commits stay local in your identity, with no AI trailer, and are never pushed. No network
-  calls of its own beyond installing `qa-cycle-tools` from npm at setup, no MCP servers. Shell commands and edits go through your normal permission prompts.
+  calls of its own beyond downloading its scripts from this repo's release at setup, no MCP servers. Shell commands and edits go through your normal permission prompts.
 - **Survives long runs.** The tracker and tooling folder live outside the session; agents checkpoint their
   progress, a usage-limit stop resumes from it, and a stamped how-to playbook carries what agents learned
   about driving your app into the next brief.
 
 ## Manual setup
 
-1. Create a tooling folder outside the repo, e.g. `~/.claude/projects/<project>/qa-fix/`, install the scripts
-   at the plugin's version from npm and link them:
+1. Create a tooling folder outside the repo, e.g. `~/.claude/projects/<project>/qa-fix/`, download the
+   release matching the plugin's version and link the scripts:
 
    ```sh
    cd <tooling>
-   npm install --prefix tools qa-cycle-tools@<plugin version>
-   for f in tools/node_modules/qa-cycle-tools/scripts/*; do ln -sf "$(realpath "$f")" "$(basename "$f")"; done
-   cp tools/node_modules/qa-cycle-tools/qa.config.example.json qa.config.json
+   mkdir -p qa-cycle
+   curl -fsSL https://github.com/DrunkenDealer/claude-code-qa-cycle/archive/refs/tags/v<plugin version>.tar.gz \
+     | tar xz -C qa-cycle --strip-components=1
+   for f in qa-cycle/tools/scripts/*; do ln -sf "$(realpath "$f")" "$(basename "$f")"; done
+   cp qa-cycle/tools/qa.config.example.json qa.config.json
    ```
 
 2. Fill in `qa.config.json`: repo path, test/lint/build commands, port ranges, what must never be touched,
    and optionally `scope` and `autoAccept`.
 3. Run `node mkrules.mjs` to generate the agents' `FIXRULES.md` and `VERIFYRULES.md`. For mobile apps, write
-   them by hand from the templates in `tools/node_modules/qa-cycle-tools/references/` and point testers at
+   them by hand from the templates in `qa-cycle/tools/references/` and point testers at
    your emulator or simulator.
 4. Add `.claude/worktrees/` to your project's `.gitignore`.
 
@@ -115,12 +117,12 @@ first cycle found 4 blockers and 51 majors, fixed in 141 small commits, each ver
 ## Development
 
 ```sh
-npm test --prefix tools   # deterministic script tests
+node --test tools/test/scripts.test.mjs   # deterministic script tests
 claude plugin eval plugin --ablation none --runs 2 --no-publish --trust-plugin   # behavior evals in evals/
 ```
 
-The plugin itself is `plugin/` (Markdown, JSON and images only); the scripts live in `tools/` and are
-published to npm as `qa-cycle-tools` at the same version (a test enforces it). Compact eval results per
+The plugin itself is `plugin/` (Markdown, JSON and images only); the scripts live in `tools/`, which setup
+downloads from the release tag `v<version>` — tag every release. Compact eval results per
 version are kept in `plugin/evals/history/` for comparison. Issues and pull requests are
 welcome — include the project type and the tracker item or agent report that showed the problem. See
 [CHANGELOG.md](CHANGELOG.md).

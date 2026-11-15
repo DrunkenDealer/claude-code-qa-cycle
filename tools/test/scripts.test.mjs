@@ -44,12 +44,6 @@ function fixture({ items = [], units = {}, runs, gate = true, config = {}, agent
 const item = (id, o = {}) => ({ id, sev: "M", bucket: "now", ws: "W1", unit: 1, title: id, where: "x", note: "", status: "verified", commit: "", verify: "ok", ...o });
 const freePort = () => new Promise((res) => { const s = createServer().listen(0, () => { const p = s.address().port; s.close(() => res(p)); }); });
 
-// The run skill installs qa-cycle-tools at the plugin's own version.
-test("package version matches the plugin version", () => {
-  const read = (p) => JSON.parse(readFileSync(join(SCRIPTS, p), "utf8")).version;
-  assert.equal(read("../package.json"), read("../../plugin/.claude-plugin/plugin.json"));
-});
-
 // ── regression: behavior 1.2.4 already has ──
 
 test("add: B/M go to now, m goes to later as deferred", () => {
