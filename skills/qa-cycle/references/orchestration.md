@@ -1,5 +1,9 @@
 # Orchestration
 
+Contents: Structure · Model per role · Load budget · Scheduling · Resource sweep (per platform,
+devices) · Ports and paths · Playbook · Agent lifecycle · Decisions that are the user's ·
+Cycle boundary · Resume after a restart
+
 ## Structure
 
 ```
