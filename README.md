@@ -34,7 +34,8 @@ walks you through setup. To test one area only, say so: "QA only the notificatio
 flowchart LR
     A[Map features<br/>qa-mapper] --> B[Plan small<br/>test units]
     B --> C[Test in parallel<br/>one qa-tester per unit]
-    C --> D[Bug list]
+    C --> TR[Triage by root cause<br/>qa-triager]
+    TR --> D[Bug list]
     D --> G{You approve<br/>what to fix}
     G --> E[Fix in git worktrees<br/>qa-planner + qa-fixer]
     E --> F[Merge gate<br/>tests, lint, build]
@@ -65,6 +66,7 @@ flowchart LR
 | `qa-planner` | Opus | Writes and revises fix plans (read-only) |
 | `qa-fixer` | Sonnet | Implements one fix in its own worktree; reports a plan gap rather than redesigning |
 | `qa-verifier` | Sonnet | Adversarially re-checks one merged fix; never the agent that wrote it |
+| `qa-triager` | Sonnet | Groups a batch of findings by root cause, folds duplicates, drops what no real user can reach |
 | `regression`, `manual-qa` skills | — | Single-change checks against platform checklists (Material, HIG, WCAG 2.2 AA, non-UI) |
 | `scripts/` | Node.js | Tracker, sandboxes, merge gate, exit criteria (`done`), cleanup (`close`), playbook check |
 

@@ -10,7 +10,8 @@ Cycle boundary · Resume after a restart
 user ──task──▶ ORCHESTRATOR (you; the strongest model in the session)
                  │  plans, splits, dispatches, merges, keeps the tracker, talks to the user
                  ├─▶ mapper      (read-only)      builds the feature map
-                 ├─▶ testers     (sandbox each)   one test unit each → findings
+                 ├─▶ testers     (sandbox each)   one test unit each → findings file
+                 ├─▶ triagers    (read-only)      one batch of findings each → root-cause groups, drops
                  ├─▶ fixers      (worktree each)  one item / root-cause group each → commits on a branch
                  └─▶ verifiers   (sandbox each)   one fix each, fresh eyes → VERIFIED | FAILED + NEW
 ```
@@ -28,10 +29,11 @@ Agents report back once, in a fixed format (see the rule templates). Their repor
 | Fixer | `qa-fixer` | Sonnet, medium | Executes the plan; stops with `PLAN GAP` instead of redesigning |
 | Mapper | `qa-mapper` | Sonnet, medium | Read-only feature map from the code |
 | Tester | `qa-tester` | Sonnet, medium | One test unit in its own sandbox → findings |
+| Triager | `qa-triager` | Sonnet, medium | One batch of findings → root-cause groups, folds, drops. Keeps raw findings out of your context |
 | Verifier | `qa-verifier` | Sonnet, medium | One fix, fresh eyes. All three execute a written brief; quality comes from the small scope and the brief |
 | Quick look-ups | Explore / Haiku | — | "where is X handled" — never for judgement |
 
-**Effort is set by the agent definition, not at spawn.** The Agent tool takes a `model` but no effort; an agent without an `effort` field inherits the session's level. The five `qa-*` definitions (in the configs repo's `agents/`) pin model and effort so spend is deterministic. `CLAUDE_CODE_EFFORT_LEVEL` would override everything for the session — don't set it during a loop.
+**Effort is set by the agent definition, not at spawn.** The Agent tool takes a `model` but no effort; an agent without an `effort` field inherits the session's level. The six `qa-*` definitions (in the configs repo's `agents/`) pin model and effort so spend is deterministic. `CLAUDE_CODE_EFFORT_LEVEL` would override everything for the session — don't set it during a loop.
 
 **Escalate effort, not by default:** start everyone at medium. A planner revising after the **second** failed verification on the same item gets `effort: high` (spawn a one-off general-purpose Opus agent with the qa-planner brief, or bump the definition temporarily).
 
