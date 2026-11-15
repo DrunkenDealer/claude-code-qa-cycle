@@ -8,7 +8,7 @@
   "plugins": [
     {
       "name": "qa-cycle",
-      "source": "./",
+      "source": "./plugin",
       "category": "testing",
       "tags": ["qa", "testing", "multi-agent", "bug-fixing"]
     }

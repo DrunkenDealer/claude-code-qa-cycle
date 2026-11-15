@@ -8,6 +8,10 @@
 - **Breaking:** the marketplace is renamed `qa-cycle` → `mashlab`; install with `/plugin install qa-cycle@mashlab`.
   An existing install: `/plugin marketplace remove qa-cycle`, then add the marketplace again.
 - Skills pre-approve only `Read, Glob, Grep`, the plugin directory's limit for unverified publishers.
+- **Breaking:** the scripts ship as the npm package `qa-cycle-tools` at the plugin's version, because the plugin
+  directory accepts only Markdown, JSON and images from unverified publishers. The plugin moves to `plugin/`
+  (the marketplace points there), the scripts, rule templates and tests to `tools/`. A tooling folder installs
+  the package (`npm install --prefix <tooling>/tools qa-cycle-tools@<version>`) and re-links its scripts.
 
 ## 1.3.0 — 2026-11-15
 

@@ -68,7 +68,7 @@ flowchart LR
 | `qa-verifier` | Sonnet | Adversarially re-checks one merged fix; never the agent that wrote it |
 | `qa-triager` | Sonnet | Groups a batch of findings by root cause, folds duplicates, drops what no real user can reach |
 | `regression`, `manual-qa` skills | — | Single-change checks against platform checklists (Material, HIG, WCAG 2.2 AA, non-UI) |
-| `scripts/` | Node.js | Tracker, sandboxes, merge gate, exit criteria (`done`), cleanup (`close`), playbook check |
+| [`qa-cycle-tools`](tools/) (npm) | Node.js | Tracker, sandboxes, merge gate, exit criteria (`done`), cleanup (`close`), playbook check |
 
 ## Safety and data
 
@@ -79,26 +79,28 @@ flowchart LR
 - **Isolation.** Own worktree per fixer, own sandbox and ports per tester and verifier. Nothing touches
   production, shared state or real payments; `offLimits` files are never opened.
 - **Local only.** Commits stay local in your identity, with no AI trailer, and are never pushed. No network
-  calls of its own, no MCP servers. Shell commands and edits go through your normal permission prompts.
+  calls of its own beyond installing `qa-cycle-tools` from npm at setup, no MCP servers. Shell commands and edits go through your normal permission prompts.
 - **Survives long runs.** The tracker and tooling folder live outside the session; agents checkpoint their
   progress, a usage-limit stop resumes from it, and a stamped how-to playbook carries what agents learned
   about driving your app into the next brief.
 
 ## Manual setup
 
-1. Create a tooling folder outside the repo, e.g. `~/.claude/projects/<project>/qa-fix/`, and link the scripts:
+1. Create a tooling folder outside the repo, e.g. `~/.claude/projects/<project>/qa-fix/`, install the scripts
+   at the plugin's version from npm and link them:
 
    ```sh
-   SKILL=<path to the installed plugin>/skills/run
    cd <tooling>
-   for f in $SKILL/scripts/*.mjs $SKILL/scripts/*.sh; do ln -sf "$(realpath "$f")" "$(basename "$f")"; done
-   cp $SKILL/scripts/qa.config.example.json qa.config.json
+   npm install --prefix tools qa-cycle-tools@<plugin version>
+   for f in tools/node_modules/qa-cycle-tools/scripts/*; do ln -sf "$(realpath "$f")" "$(basename "$f")"; done
+   cp tools/node_modules/qa-cycle-tools/qa.config.example.json qa.config.json
    ```
 
 2. Fill in `qa.config.json`: repo path, test/lint/build commands, port ranges, what must never be touched,
    and optionally `scope` and `autoAccept`.
 3. Run `node mkrules.mjs` to generate the agents' `FIXRULES.md` and `VERIFYRULES.md`. For mobile apps, write
-   them by hand from the templates in `references/` and point testers at your emulator or simulator.
+   them by hand from the templates in `tools/node_modules/qa-cycle-tools/references/` and point testers at
+   your emulator or simulator.
 4. Add `.claude/worktrees/` to your project's `.gitignore`.
 
 ## Requirements and cost
@@ -113,11 +115,13 @@ first cycle found 4 blockers and 51 majors, fixed in 141 small commits, each ver
 ## Development
 
 ```sh
-node --test tests/scripts.test.mjs   # deterministic script tests
-claude plugin eval . --ablation none --runs 2 --no-publish --trust-plugin   # behavior evals in evals/
+npm test --prefix tools   # deterministic script tests
+claude plugin eval plugin --ablation none --runs 2 --no-publish --trust-plugin   # behavior evals in evals/
 ```
 
-Compact eval results per version are kept in `evals/history/` for comparison. Issues and pull requests are
+The plugin itself is `plugin/` (Markdown, JSON and images only); the scripts live in `tools/` and are
+published to npm as `qa-cycle-tools` at the same version (a test enforces it). Compact eval results per
+version are kept in `plugin/evals/history/` for comparison. Issues and pull requests are
 welcome — include the project type and the tracker item or agent report that showed the problem. See
 [CHANGELOG.md](CHANGELOG.md).
 

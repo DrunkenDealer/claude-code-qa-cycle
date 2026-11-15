@@ -1,0 +1,12 @@
+{
+  "name": "qa-cycle-tools",
+  "version": "1.3.0",
+  "description": "Tracker, sandbox, merge-gate and cleanup scripts for the QA Cycle Claude Code plugin.",
+  "files": ["scripts/", "references/", "qa.config.example.json"],
+  "engines": { "node": ">=18" },
+  "scripts": { "test": "node --test" },
+  "repository": { "type": "git", "url": "git+https://github.com/DrunkenDealer/claude-code-qa-cycle.git", "directory": "tools" },
+  "homepage": "https://github.com/DrunkenDealer/claude-code-qa-cycle#readme",
+  "author": "Max Shwed",
+  "license": "MIT"
+}
