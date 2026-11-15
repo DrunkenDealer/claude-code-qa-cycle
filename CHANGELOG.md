@@ -7,6 +7,7 @@
   triggers it. Tooling folders that link `skills/qa-cycle/scripts/*` must re-link from `skills/run/scripts/`.
 - **Breaking:** the marketplace is renamed `qa-cycle` → `mashlab`; install with `/plugin install qa-cycle@mashlab`.
   An existing install: `/plugin marketplace remove qa-cycle`, then add the marketplace again.
+- Skills pre-approve only `Read, Glob, Grep`, the plugin directory's limit for unverified publishers.
 
 ## 1.3.0 — 2026-11-15
 
