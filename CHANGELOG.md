@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.3.1 — 2026-11-15
 
 - **Breaking:** the orchestrator skill is renamed `qa-cycle` → `run`, so it is `/qa-cycle:run` instead of
   `/qa-cycle:qa-cycle`; phases read `/qa-cycle:run fix`, `/qa-cycle:run status`. Asking for "a QA cycle" still
