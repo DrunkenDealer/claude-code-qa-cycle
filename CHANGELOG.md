@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.2 — 2026-11-15
+
+- Setup fetches the release tag with `git clone --depth 1 --branch v<version>` instead of piping `curl` into `tar`,
+  which the plugin directory flags as a download-and-run command. Updating: delete `<tooling>/qa-cycle` and clone
+  the new tag.
+
 ## 1.3.1 — 2026-11-15
 
 - **Breaking:** the orchestrator skill is renamed `qa-cycle` → `run`, so it is `/qa-cycle:run` instead of
