@@ -1,6 +1,6 @@
 {
   "name": "mashlab",
-  "description": "QA Cycle: whole-app QA, fixing and verification by a team of Claude Code agents.",
+  "description": "Claude Code plugins by Max Shwed: QA Cycle (whole-app QA, fixing and verification by a team of agents) and Vitrine Deck (App Store and Google Play screenshots).",
   "owner": {
     "name": "Max Shwed",
     "url": "https://github.com/DrunkenDealer"
@@ -11,6 +11,17 @@
       "source": "./plugin",
       "category": "testing",
       "tags": ["qa", "testing", "multi-agent", "bug-fixing"]
+    },
+    {
+      "name": "vitrine-deck",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/DrunkenDealer/claude-code-vitrine-deck.git",
+        "path": "plugin",
+        "ref": "main"
+      },
+      "category": "design",
+      "tags": ["app-store", "google-play", "screenshots", "aso"]
     }
   ]
 }
