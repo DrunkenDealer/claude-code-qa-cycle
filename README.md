@@ -15,7 +15,7 @@ small units, one agent each, a durable record, and someone other than the fixer 
 ## Install
 
 ```
-/plugin marketplace add DrunkenDealer/claude-code-qa-cycle
+/plugin marketplace add DrunkenDealer/claude-plugins
 /plugin install qa-cycle@mashlab
 ```
 
