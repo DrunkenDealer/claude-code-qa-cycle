@@ -22,6 +22,10 @@ small units, one agent each, a durable record, and someone other than the fixer 
 Then open your project and ask **"Run a QA cycle on this app"** (or `/qa-cycle:run`). The first run
 walks you through setup. To test one area only, say so: "QA only the notifications area".
 
+[`mashlab`](https://github.com/DrunkenDealer/claude-plugins) is the catalog of all Mash Lab plugins, including
+[Vitrine Deck](https://github.com/DrunkenDealer/claude-code-vitrine-deck), which makes your App Store and Google Play
+screenshots.
+
 | You want to… | Use |
 |---|---|
 | Test the whole app (or one area), then fix and re-verify in cycles | `/qa-cycle:run` (`map`, `test`, `fix`, `verify`, `status` run one phase) |
