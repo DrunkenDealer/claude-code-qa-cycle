@@ -1,5 +1,7 @@
 # QA Cycle: whole-app QA for Claude Code, run by a team of agents
 
+![QA Cycle: whole-app QA for Claude Code, run by a team of agents that map, test, fix and verify](assets/social-preview.png)
+
 **QA Cycle is a Claude Code plugin that tests your entire app, fixes the bugs it finds and proves each fix
 works.** It maps every feature from the code, tests each one with a separate agent, hands you a bug list to
 approve, fixes the approved bugs in isolated git worktrees, and has a fresh agent verify every fix — cycle
